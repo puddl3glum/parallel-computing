@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
   
   // Visualize
 #ifdef DEBUG
-  drawboard(renderer, &board);
+  drawboard(renderer, board);
   puts("Board drawn");
 #endif
   
