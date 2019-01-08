@@ -4,3 +4,4 @@
 #include "game.h"
 
 void drawboard(SDL_Renderer*, board_t);
+// void drawboard(board_t);

@@ -12,19 +12,21 @@ void drawboard(SDL_Renderer* renderer, board_t board) {
 
   SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
-  printf("Col: %ld", board.col);
-  printf("Row: %ld", board.row);
+  printf("Col: %ld\n", board.col);
+  printf("Row: %ld\n", board.row);
 
   // iterate through board and draw
-  for (size_t i = 1; i <= board.col; i++) {
-    for (size_t j = 1; i <= board.row; j++) {
-      if (board.cells[i][j].alive) {
+  for (size_t col = 1; col <= board.col; col++) {
+    // printf("%ld ", i);
+    for (size_t row = 1; row <= board.row; row++) {
+      // printf("%ld ", j);
+      if (board.cells[row][col].alive) {
 
-        SDL_RenderDrawPoint(renderer, i, j);
+        SDL_RenderDrawPoint(renderer, row, col);
       }
     }
-    puts("");
   }
 
   SDL_RenderPresent(renderer);
+  SDL_Delay(1500);
 }

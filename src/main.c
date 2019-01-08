@@ -10,8 +10,8 @@
 
 int main(int argc, char* argv[]) {
 
-  int boardwidth = 10;
-  int boardheight = 10;
+  int boardwidth = 100;
+  int boardheight = 100;
 
 #ifdef DEBUG
   SDL_Event event;
@@ -29,13 +29,14 @@ int main(int argc, char* argv[]) {
 
 #ifdef DEBUG
   puts("Board created");
-  printboard(board);
+  // printboard(board);
 #endif
   
   // Visualize
 #ifdef DEBUG
   drawboard(renderer, board);
-  puts("Board drawn");
+  // drawboard(board);
+  // puts("Board drawn");
 #endif
   
   // Simulate for max number of generations

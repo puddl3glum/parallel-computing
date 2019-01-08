@@ -29,8 +29,8 @@ board_t randomboard(const uint64_t rowlen, const uint64_t colsize) {
       bool val = rand() & 1;
       if (val) {
         row[j].alive = true;
-        // not necessarily true, but ensure the cell will be examined in the first
-        // iteration
+        // not necessarily true, but ensure the cell will be
+        // examined in the first iteration
         row[j].aliveadj = true;
       }
     }
