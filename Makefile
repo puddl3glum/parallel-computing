@@ -1,18 +1,30 @@
 
 PROJECT = conway
 
-CCFLAGS = -O3 -std=c18 -Weverything
+CCFLAGS = -std=c18 -Wall
+LFLAGS  = -lSDL2
+OBJECTS = main.o game.o
 
-all: executable
+debug: CCFLAGS += -DDEBUG -gdwarf
 
-debug: CCFLAGS += -DDEBUG -gdwarf -TDEBUG
-debug: executable
+debug: main.o game.o draw.o
+	$(CC) -o $(PROJECT) $(CCFLAGS) $(LFLAGS) main.o game.o draw.o
 
-executable: main/main.o
-	$(CC) -o $(PROJECT) main/main.o
+release: CCFLAGS += -O3
 
-main.o: main/main.c
-	$(CC) -c main/main.c
+release: main.o game.o
+	$(CC) -o $(PROJECT) $(CCFLAGS) $(LFLAGS) main.o game.o
+
+main.o: src/main.c
+	$(CC) $(CCFLAGS) -c src/main.c
+
+game.o: src/game.c
+	$(CC) $(CCFLAGS) -c src/game.c
+
+draw.o: src/draw.c
+	$(CC) $(CCFLAGS) -c src/draw.c
 
 clean:
-	rm main/main.o
+	rm main.o
+	rm game.o
+	rm draw.o

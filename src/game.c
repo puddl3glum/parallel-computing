@@ -1,36 +1,12 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <stdbool.h>
 #include <time.h>
 
-#ifdef DEBUG
-  #include <SDL2.h>
-#endif
+#include "game.h"
 
-#include "main.h"
-
-int main(int argc, char* argv[]) {
-
-#ifdef DEBUG
-  SDL_Renderer* renderer;
-  SDL_Window* window;
-#endif
-
-  // Read in board state
-  // OR
-  // Randomize board state
-  board_t board = randomboard(100, 100);
-  
-  // Visualize
-  
-  // Simulate for max number of generations
-  
-  // cleanup
-  freeboard(board);
-}
-
-board_t randomboard(const uint64_t n, const uint64_t m) {
+board_t randomboard(const uint64_t rowlen, const uint64_t colsize) {
   /*
    * Return a 1-dimensional array (N+2)x(M+2) long with random values.
    * The values are initialized from 1..N and 1..M.
@@ -42,14 +18,14 @@ board_t randomboard(const uint64_t n, const uint64_t m) {
   
   srand((uint64_t)time(NULL));
   
-  cell_t** cells = calloc(sizeof(cell_t*), m+2);
+  cell_t** cells = calloc(sizeof(cell_t*), colsize+2);
 
-  for (size_t i = 0; i < m+2; i++) {
+  for (size_t i = 0; i < colsize+2; i++) {
     
-    cell_t* const row = calloc(sizeof(cell_t), n+2);
+    cell_t* const row = calloc(sizeof(cell_t), rowlen+2);
     cells[i] = row;
 
-    for (size_t j = 1; j <= n; j++) {
+    for (size_t j = 1; j <= rowlen; j++) {
       bool val = rand() & 1;
       if (val) {
         row[j].alive = true;
@@ -60,13 +36,23 @@ board_t randomboard(const uint64_t n, const uint64_t m) {
     }
   }
 
-  const board_t board = {n, m, cells};
+  const board_t board = {rowlen, colsize, cells};
 
   return board; 
 }
 
+void printboard(board_t board) {
+  for (size_t i = 1; i <= board.col; i++ ){
+    for (size_t j = 1; j <= board.row; j++) {
+      // printf(" %d", board.cells[i][j].alive);
+      printf(board.cells[i][j].alive ? "█" : " ");
+    }
+    puts("");
+  }
+}
+
 void freeboard(board_t b) {
-  for (size_t i = 0; i < b.m; i++) {
+  for (size_t i = 0; i < b.col; i++) {
     free(b.cells[i]);
   }
 
