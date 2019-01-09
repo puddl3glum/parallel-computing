@@ -35,7 +35,6 @@ board_t blankboard(const uint64_t row, const uint64_t col) {
 
   // First and last N+2 are false.
   // For every chunk, the first and last are false.
-  // printf("%ld %ld\n", rowlen+2, colsize+2);
   
   board_t board = {row, col, blankcells(row, col)};
 
@@ -78,8 +77,6 @@ void incneighbors(board_t board, const uint64_t row, const uint64_t col) {
    * cells.
    * */
 
-  // printf("Cell: (%ld, %ld)\n", col, row);
-
   for (int x = -1; x <= 1; x++) {
     for (int y = -1; y <= 1; y++) {
 
@@ -110,8 +107,6 @@ void decneighbors(board_t board, const uint64_t row, const uint64_t col) {
 void simgen(board_t board) {
 
   // create temp board
-  // board_t tempboard = blankboard(board.row, board.col);
-  
   board_t temp = blankboard(board.row, board.col);
 
   // copy old board to new board
@@ -119,12 +114,8 @@ void simgen(board_t board) {
 
   for (size_t row = 1; row <= board.row; row++) {
     for (size_t col = 1; col <= board.col; col++) {
-      // check for each cell
-      // take off one for this alive cell
       
       // copy old cell to new cell
-      // printf("(%ld, %ld) : %d\n", row, col, new.cells[row][col].neighbors);
-      
       // no pointer needed to val which won't be changed
       cell_t tempcell = temp.cells[row][col];
 
@@ -154,7 +145,6 @@ void copyboard(board_t dest, board_t src) {
 void printboard(board_t board) {
   for (size_t i = 1; i <= board.col; i++ ){
     for (size_t j = 1; j <= board.row; j++) {
-      // printf(" %d", board.cells[i][j].alive);
       printf(board.cells[i][j].alive ? "█" : "░");
     }
     puts("");
@@ -164,7 +154,6 @@ void printboard(board_t board) {
 void printfullboard(board_t board) {
   for (size_t i = 0; i < board.col + 2; i++ ){
     for (size_t j = 0; j < board.row + 2; j++) {
-      // printf(" %d", board.cells[i][j].alive);
       printf(board.cells[i][j].alive ? "█" : "░");
     }
     puts("");
