@@ -15,13 +15,13 @@ release: CCFLAGS += -O3
 release: main.o game.o
 	$(CC) -o $(PROJECT) $(CCFLAGS) $(LFLAGS) main.o game.o
 
-main.o: src/main.c
+main.o: src/main.c src/main.h
 	$(CC) $(CCFLAGS) -c src/main.c
 
-game.o: src/game.c
+game.o: src/game.c src/game.h
 	$(CC) $(CCFLAGS) -c src/game.c
 
-draw.o: src/draw.c
+draw.o: src/draw.c src/draw.h
 	$(CC) $(CCFLAGS) -c src/draw.c
 
 clean:

@@ -28,5 +28,5 @@ void drawboard(SDL_Renderer* renderer, board_t board) {
   }
 
   SDL_RenderPresent(renderer);
-  SDL_Delay(150);
+  // SDL_Delay(25);
 }

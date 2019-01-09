@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "main.h"
 #include "game.h"
@@ -10,10 +11,20 @@
 
 int main(int argc, char* argv[]) {
 
-  int boardwidth = 100;
-  int boardheight = 100;
+  if (argc < 4) {
+    printf("USAGE: %s width height generation\n", argv[0]);
+    return 1;
+  }
 
-  int maxgenerations = 1000;
+  // int boardwidth = 1000;
+  // int boardheight = 1000;
+
+  // int maxgenerations = 1000;
+  
+  int boardwidth = atoi(argv[1]);
+  int boardheight = atoi(argv[2]);
+  int maxgenerations = atoi(argv[3]);
+
 
 #ifdef DEBUG
   // SDL_Event event;
@@ -29,21 +40,17 @@ int main(int argc, char* argv[]) {
   // Randomize board state
   board_t board = randomboard(boardwidth, boardheight);
 
-#ifdef DEBUG
-  puts("Board created");
-  // printboard(board);
-#endif
-
   for (int gen = 0; gen < maxgenerations; gen++) {
 
 #ifdef DEBUG
     // Visualize
     drawboard(renderer, board);
+    // printboard(board);
+    // puts("");
 #endif
   
     // Simulate generation
     simgen(board);
-    
     
     // break;
   }
@@ -55,6 +62,6 @@ int main(int argc, char* argv[]) {
 #endif
   
   // cleanup
-  freeboard(board);
+  freecells(board);
 }
 
