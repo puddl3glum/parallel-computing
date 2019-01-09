@@ -172,7 +172,7 @@ void printfullboard(board_t board) {
 }
 
 void freecells(board_t b) {
-  for (size_t i = 0; i < b.col; i++) {
+  for (size_t i = 0; i < b.col + 2; i++) {
     free(b.cells[i]);
   }
 
