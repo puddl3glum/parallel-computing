@@ -17,6 +17,8 @@ board_t randomboard(const uint64_t rowlen, const uint64_t colsize) {
   // For every chunk, the first and last are false.
   
   srand((uint64_t)time(NULL));
+
+  board_t board = blankboard(rowlen, colsize);
   
   cell_t** cells = calloc(sizeof(cell_t*), colsize+2);
 
@@ -39,6 +41,41 @@ board_t randomboard(const uint64_t rowlen, const uint64_t colsize) {
   const board_t board = {rowlen, colsize, cells};
 
   return board; 
+}
+
+board_t blankboard(const uint64_t rowlen, const uint64_t colsize) {
+  /*
+   * Return a 1-dimensional array (N+2)x(M+2) long with random values.
+   * The values are initialized from 1..N and 1..M.
+   * The edges are treated as ghost cells.
+   * */
+
+  // First and last N+2 are false.
+  // For every chunk, the first and last are false.
+  
+  cell_t** cells = calloc(sizeof(cell_t*), colsize+2);
+
+  for (size_t i = 0; i < colsize+2; i++) {
+    cell_t* const row = calloc(sizeof(cell_t), rowlen+2);
+    cells[i] = row;
+  }
+
+  const board_t board = {rowlen, colsize, cells};
+
+  return board; 
+
+}
+
+void simgen(board_t board) {
+
+  // create temp board
+  
+
+  for (size_t col = 1; col <= board.col; col++) {
+    for (size_t row = 1; row <= board.row; row++) {
+      // check for each cell
+    }
+  }
 }
 
 void printboard(board_t board) {

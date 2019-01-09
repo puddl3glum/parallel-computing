@@ -13,8 +13,10 @@ int main(int argc, char* argv[]) {
   int boardwidth = 100;
   int boardheight = 100;
 
+  int maxgenerations = 1000;
+
 #ifdef DEBUG
-  SDL_Event event;
+  // SDL_Event event;
   SDL_Renderer* renderer;
   SDL_Window* window;
 
@@ -31,15 +33,20 @@ int main(int argc, char* argv[]) {
   puts("Board created");
   // printboard(board);
 #endif
-  
-  // Visualize
+
+  for (int gen = 0; gen < maxgenerations; gen++) {
+
 #ifdef DEBUG
-  drawboard(renderer, board);
-  // drawboard(board);
-  // puts("Board drawn");
+    // Visualize
+    drawboard(renderer, board);
 #endif
   
-  // Simulate for max number of generations
+    // Simulate generation
+    simgen(board);
+    
+    
+    // break;
+  }
   
 #ifdef DEBUG
   SDL_DestroyRenderer(renderer);

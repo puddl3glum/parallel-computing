@@ -17,3 +17,4 @@ typedef struct {
 void freeboard(board_t);
 board_t randomboard(uint64_t, uint64_t);
 void printboard(board_t);
+void simgen(board_t);
