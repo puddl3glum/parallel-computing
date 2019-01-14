@@ -40,7 +40,7 @@ else()
 
 endif()
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp")
+# set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp")
 # target_link_libraries(${PROJECT} OpenMP)
 
 # gcc and clang specific flags

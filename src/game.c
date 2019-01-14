@@ -112,7 +112,7 @@ void simgen(board_t board) {
   // copy old board to new board
   copyboard(temp, board);
 
-  # pragma omp parallel for
+  // # pragma omp parallel for
   for (size_t row = 1; row <= board.row; row++) {
     for (size_t col = 1; col <= board.col; col++) {
       
