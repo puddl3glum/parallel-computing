@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
-project(conway)
+
+set(PROJECT conway)
+
+project(${PROJECT})
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE release)
@@ -26,20 +29,24 @@ if(CMAKE_BUILD_TYPE MATCHES "Debug")
     ${MAIN_SOURCE_DIR}/draw.c
     )
 
-  target_link_libraries(conway SDL2)
+  # target_link_libraries(${PROJECT} SDL2)
+  set(PROGRAM_LIBS SDL2)
 
 else()
-  add_executable(conway
+  add_executable(${PROJECT}
     ${MAIN_SOURCE_DIR}/main.c
     ${MAIN_SOURCE_DIR}/game.c
     )
 
 endif()
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp")
+# target_link_libraries(${PROJECT} OpenMP)
+
 # gcc and clang specific flags
 MESSAGE(STATUS "CMAKE_C_COMPILER_ID : " ${CMAKE_C_COMPILER_ID})
 if (${CMAKE_C_COMPILER_ID} MATCHES "GNU")
-  target_compile_options(conway PUBLIC
+  target_compile_options(${PROJECT} PUBLIC
     "$<$<CONFIG:RELEASE>:-O3>"
     "$<$<CONFIG:DEBUG>:-Og>"
     "$<$<CONFIG:DEBUG>:-gdwarf>"
@@ -49,12 +56,13 @@ if (${CMAKE_C_COMPILER_ID} MATCHES "GNU")
     "-Wshadow"
     )
 elseif (${CMAKE_C_COMPILER_ID} MATCHES "Clang")
-  target_compile_options(conway PUBLIC
+  target_compile_options(${PROJECT} PUBLIC
     "$<$<CONFIG:RELEASE>:-O3>"
     "$<$<CONFIG:DEBUG>:-O0>"
+    "$<$<CONFIG:DEBUG>:-Og>"
+    "$<$<CONFIG:DEBUG>:-gdwarf>"
+    "$<$<CONFIG:DEBUG>:-DDEBUG>"
     "-Weverything"
-    "-Wno-c++98-compat"
-    "-Wno-c++98-compat-pedantic"
     "-Wno-gnu-zero-variadic-macro-arguments"
     "-Wno-weak-vtables"
     "-fno-omit-frame-pointer"
@@ -63,3 +71,11 @@ elseif (${CMAKE_C_COMPILER_ID} MATCHES "Clang")
     "-fno-sanitize=vptr"
     )
 endif ()
+
+target_link_libraries(${PROJECT}
+  ${PROGRAM_LIBS}
+  "$<$<C_COMPILER_ID:Clang>:-fsanitize=integer>"
+  "$<$<C_COMPILER_ID:Clang>:-fsanitize=undefined>"
+  "$<$<C_COMPILER_ID:Clang>:-fsanitize=vptr>"
+  )
+

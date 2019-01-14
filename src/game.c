@@ -52,7 +52,7 @@ board_t randomboard(const uint64_t rowlen, const uint64_t colsize) {
   // First and last N+2 are false.
   // For every chunk, the first and last are false.
   
-  srand((uint64_t)time(NULL));
+  srand((uint32_t)time(NULL));
 
   board_t board = blankboard(rowlen, colsize);
 
@@ -83,7 +83,7 @@ void incneighbors(board_t board, const uint64_t row, const uint64_t col) {
       if (x == 0 && y == 0) continue;
 
       // printf("\tCell neighbor: (%ld, %ld)\n", col + y, row + x);
-      board.cells[row + y][col + x].neighbors++;
+      board.cells[(int64_t) row + y][(int64_t) col + x].neighbors++;
     }
   }
 }
@@ -99,7 +99,7 @@ void decneighbors(board_t board, const uint64_t row, const uint64_t col) {
 
       if (x == 0 && y == 0) continue;
 
-      board.cells[row + y][col + x].neighbors--;
+      board.cells[(int64_t) row + y][(int64_t) col + x].neighbors--;
     }
   }
 }
@@ -112,6 +112,7 @@ void simgen(board_t board) {
   // copy old board to new board
   copyboard(temp, board);
 
+  # pragma omp parallel for
   for (size_t row = 1; row <= board.row; row++) {
     for (size_t col = 1; col <= board.col; col++) {
       

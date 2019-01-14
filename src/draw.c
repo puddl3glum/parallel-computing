@@ -22,7 +22,7 @@ void drawboard(SDL_Renderer* renderer, board_t board) {
       // printf("%ld ", j);
       if (board.cells[row][col].alive) {
 
-        SDL_RenderDrawPoint(renderer, row, col);
+        SDL_RenderDrawPoint(renderer, (int) row, (int) col);
       }
     }
   }

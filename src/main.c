@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #include "main.h"
 #include "game.h"
@@ -21,9 +22,9 @@ int main(int argc, char* argv[]) {
 
   // int maxgenerations = 1000;
   
-  int boardwidth = atoi(argv[1]);
-  int boardheight = atoi(argv[2]);
-  int maxgenerations = atoi(argv[3]);
+  uint64_t boardwidth = strtoul(argv[1], NULL, 10);
+  uint64_t boardheight = strtoul(argv[2], NULL, 10);
+  uint64_t maxgenerations = strtoul(argv[3], NULL, 10);
 
 
 #ifdef DEBUG
@@ -32,7 +33,7 @@ int main(int argc, char* argv[]) {
   SDL_Window* window;
 
   SDL_Init(SDL_INIT_VIDEO);
-  SDL_CreateWindowAndRenderer(boardwidth, boardheight, 0, &window, &renderer);
+  SDL_CreateWindowAndRenderer((int) boardwidth, (int) boardheight, 0, &window, &renderer);
 #endif
 
   // Read in board state
@@ -40,7 +41,7 @@ int main(int argc, char* argv[]) {
   // Randomize board state
   board_t board = randomboard(boardwidth, boardheight);
 
-  for (int gen = 0; gen < maxgenerations; gen++) {
+  for (uint64_t gen = 0; gen < maxgenerations; gen++) {
 
 #ifdef DEBUG
     // Visualize
