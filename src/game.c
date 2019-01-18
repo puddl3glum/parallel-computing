@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <string.h>
 #include <time.h>
+#include <omp.h>
+#include <sys/sysinfo.h>
 
 #include "game.h"
 
@@ -111,6 +113,8 @@ void simgen(board_t board) {
 
   // copy old board to new board
   copyboard(temp, board);
+
+  omp_set_num_threads(get_nprocs());
 
   # pragma omp parallel for
   for (size_t row = 1; row <= board.row; row++) {
