@@ -12,6 +12,7 @@ void decneighbors(board_t, const uint64_t, const uint64_t);
 void copyboard(board_t, board_t);
 board_t blankboard(const uint64_t, const uint64_t);
 cell_t** blankcells(const uint64_t, const uint64_t);
+bool arraycomp(uint64_t*, uint64_t*, uint64_t);
 
 
 cell_t** blankcells(const uint64_t row, const uint64_t col) {
@@ -40,6 +41,88 @@ board_t blankboard(const uint64_t row, const uint64_t col) {
 
   return board; 
 
+}
+
+cyclesum_t newcyclesum(const uint64_t row, const uint64_t col, uint64_t maxcycles) {
+  /*
+   * Return a new cyclesum_t struct
+   * */
+
+  maxcycles = maxcycles + 1; // add 1 to make space for the cycle being summed
+
+  // create an array for holding sums of length maxcycle
+  uint64_t** const sums = calloc(sizeof(uint64_t*), maxcycles);
+
+  for (size_t x = 0; x < maxcycles; x++) {
+
+    // create an array for holding row sums of length col
+    sums[x] = calloc(sizeof(uint64_t), col);
+
+  }
+
+  cyclesum_t cyclesum = {
+    maxcycles,
+    col,
+    row,
+    0, // current cycle is currently 0
+    sums
+  };
+
+  return cyclesum;
+}
+
+void freecyclesum(cyclesum_t cyclesum) {
+  for (size_t x = 0; x < cyclesum.maxcycle; x++) {
+    free(cyclesum.sums[x]);
+  }
+
+  free(cyclesum.sums);
+}
+
+bool arraycomp(uint64_t* a, uint64_t* b, uint64_t len) {
+
+  for (size_t x = 0; x < len; x++) {
+    if (a[x] != b[x]) return false;
+  }
+
+  return true;
+}
+
+bool checkcycles(cyclesum_t* cyclesum, board_t board) {
+  /* Returns true if two cycles are equal, else false
+   * Sets the current state of the board to be the next
+   * cycle, replacing the oldest cycle
+   * */
+
+  // sum the alive cells in the rows of the board
+  
+  for (size_t x = 1; x <= board.col; x++ ) {
+    uint64_t sum = 0;
+
+    for (size_t y = 1; y <= board.row; y++) {
+      if (board.cells[x][y].alive) {
+        sum++;
+      }
+    }
+
+    // set sum to cyclesum current
+    cyclesum->sums[cyclesum->current][x - 1] = sum;
+  }
+
+  // compare current to other cycles
+  for (size_t x = 0; x < cyclesum->maxcycle; x++) {
+    uint64_t currentcycle = cyclesum->current;
+
+    if (x != currentcycle) {
+      if (arraycomp(cyclesum->sums[x], cyclesum->sums[currentcycle], cyclesum->row)) return true;
+    }
+  }
+
+  // increment cycle
+  // NOTE: there is no need to increment if two cycles matched
+  cyclesum->current = (cyclesum->current + 1) % cyclesum->maxcycle;
+
+  return false;
 }
 
 board_t randomboard(const uint64_t rowlen, const uint64_t colsize) {

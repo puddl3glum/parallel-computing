@@ -13,7 +13,11 @@
 int main(int argc, char* argv[]) {
 
   if (argc < 4) {
-    printf("USAGE: %s width height generation\n", argv[0]);
+    printf("USAGE: %s WIDTH HEIGHT GENERATIONS [CYCLE_HISTORY]\n", argv[0]);
+    puts("\tWIDTH: width of the board");
+    puts("\tHEIGHT: height of the board");
+    puts("\tGENERATIONS: The maximum number of generations to simulate");
+    puts("\tCYCLE_HISTORY: how far back to check for cycles. default = 2");
     return 1;
   }
 
@@ -22,9 +26,10 @@ int main(int argc, char* argv[]) {
 
   // int maxgenerations = 1000;
   
-  uint64_t boardwidth = strtoul(argv[1], NULL, 10);
-  uint64_t boardheight = strtoul(argv[2], NULL, 10);
-  uint64_t maxgenerations = strtoul(argv[3], NULL, 10);
+  const uint64_t boardwidth = strtoul(argv[1], NULL, 10);
+  const uint64_t boardheight = strtoul(argv[2], NULL, 10);
+  const uint64_t maxgenerations = strtoul(argv[3], NULL, 10);
+  const uint64_t maxcycles = (argc == 5) ? strtoul(argv[4], NULL, 10) : 2;
 
 
 #ifdef DEBUG
@@ -41,6 +46,9 @@ int main(int argc, char* argv[]) {
   // Randomize board state
   board_t board = randomboard(boardwidth, boardheight);
 
+  // get new cyclesum tracker
+  cyclesum_t cyclesum = newcyclesum(boardwidth, boardheight, maxcycles);
+
   for (uint64_t gen = 0; gen < maxgenerations; gen++) {
 
 #ifdef DEBUG
@@ -52,6 +60,15 @@ int main(int argc, char* argv[]) {
   
     // Simulate generation
     simgen(board);
+
+    if ( checkcycles(&cyclesum, board) ) break;
+
+
+    // compute the checksum of the board
+    // sum alive cells in each row
+    // add to array
+    // default, 1 generation
+    // if current array == any in history : quit
     
     // break;
   }
@@ -64,5 +81,6 @@ int main(int argc, char* argv[]) {
   
   // cleanup
   freecells(board);
+  freecyclesum(cyclesum);
 }
 

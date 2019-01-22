@@ -43,6 +43,8 @@ endif()
 # set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp")
 # target_link_libraries(${PROJECT} OpenMP)
 
+set(CMAKE_C_STANDARD 11)
+
 # gcc and clang specific flags
 MESSAGE(STATUS "CMAKE_C_COMPILER_ID : " ${CMAKE_C_COMPILER_ID})
 if (${CMAKE_C_COMPILER_ID} MATCHES "GNU")
