@@ -13,11 +13,13 @@
 int main(int argc, char* argv[]) {
 
   if (argc < 4) {
-    printf("USAGE: %s WIDTH HEIGHT GENERATIONS [CYCLE_HISTORY]\n", argv[0]);
-    puts("\tWIDTH: width of the board");
-    puts("\tHEIGHT: height of the board");
+    printf("USAGE: %s SIZE GENERATIONS CHANCE\n", argv[0]);
+    puts("\tSIZE: size of the board");
+    // puts("\tWIDTH: width of the board");
+    // puts("\tHEIGHT: height of the board");
     puts("\tGENERATIONS: The maximum number of generations to simulate");
-    puts("\tCYCLE_HISTORY: how far back to check for cycles. default = 2");
+    puts("\tCHANCE: The chance [0, 1] of a cell being alive on initialization.");
+    // puts("\tCYCLE_HISTORY: how far back to check for cycles. suggested: 12");
     return 1;
   }
 
@@ -26,11 +28,19 @@ int main(int argc, char* argv[]) {
 
   // int maxgenerations = 1000;
   
+  /*
   const uint64_t boardwidth = strtoul(argv[1], NULL, 10);
   const uint64_t boardheight = strtoul(argv[2], NULL, 10);
   const uint64_t maxgenerations = strtoul(argv[3], NULL, 10);
-  const uint64_t maxcycles = (argc == 5) ? strtoul(argv[4], NULL, 10) : 2;
+  const double chance = strtod(argv[4], NULL);
+  const uint64_t maxcycles = strtoul(argv[5], NULL, 10);
+  */
 
+  const uint64_t boardwidth = strtoul(argv[1], NULL, 10);
+  const uint64_t boardheight = boardwidth;
+  const uint64_t maxgenerations = strtoul(argv[2], NULL, 10);
+  const double chance = strtod(argv[3], NULL);
+  const uint64_t maxcycles = 12;
 
 #ifdef DEBUG
   // SDL_Event event;
@@ -44,7 +54,7 @@ int main(int argc, char* argv[]) {
   // Read in board state
   // OR
   // Randomize board state
-  board_t board = randomboard(boardwidth, boardheight);
+  board_t board = randomboard(boardwidth, boardheight, chance);
 
   // get new cyclesum tracker
   cyclesum_t cyclesum = newcyclesum(boardwidth, boardheight, maxcycles);
@@ -62,7 +72,6 @@ int main(int argc, char* argv[]) {
     simgen(board);
 
     if ( checkcycles(&cyclesum, board) ) break;
-
 
     // compute the checksum of the board
     // sum alive cells in each row

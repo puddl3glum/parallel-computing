@@ -23,7 +23,7 @@ typedef struct {
 } cyclesum_t;
 
 void freecells(board_t);
-board_t randomboard(uint64_t, uint64_t);
+board_t randomboard(uint64_t, uint64_t, double);
 board_t blankboard(uint64_t, uint64_t);
 cyclesum_t newcyclesum(uint64_t, uint64_t, uint64_t);
 void freecyclesum(cyclesum_t);

@@ -114,7 +114,7 @@ bool checkcycles(cyclesum_t* cyclesum, board_t board) {
     uint64_t currentcycle = cyclesum->current;
 
     if (x != currentcycle) {
-      if (arraycomp(cyclesum->sums[x], cyclesum->sums[currentcycle], cyclesum->row)) return true;
+      if ( arraycomp(cyclesum->sums[x], cyclesum->sums[currentcycle], cyclesum->row)) return true;
     }
   }
 
@@ -125,7 +125,7 @@ bool checkcycles(cyclesum_t* cyclesum, board_t board) {
   return false;
 }
 
-board_t randomboard(const uint64_t rowlen, const uint64_t colsize) {
+board_t randomboard(const uint64_t rowlen, const uint64_t colsize, const double chance) {
   /*
    * Return a 1-dimensional array (N+2)x(M+2) long with random values.
    * The values are initialized from 1..N and 1..M.
@@ -141,7 +141,8 @@ board_t randomboard(const uint64_t rowlen, const uint64_t colsize) {
 
   for (size_t row = 1; row <= board.row; row++) {
     for (size_t col = 1; col <= board.col; col++) {
-      bool val = rand() & 1;
+      int randomnum = rand();
+      bool val = ((double) randomnum / (double) RAND_MAX) > chance;
       if (val) {
         board.cells[row][col].alive = true;
         // not necessarily true, but ensure the cell will be
