@@ -1,3 +1,10 @@
+/*
+ * William Setzer
+ * wjsetzer
+ * CS 732
+ * Homework 1
+ * */
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>

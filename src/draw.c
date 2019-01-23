@@ -1,3 +1,10 @@
+/*
+ * William Setzer
+ * wjsetzer
+ * CS 732
+ * Homework 1
+ * */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <SDL2/SDL.h>
