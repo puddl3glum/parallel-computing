@@ -11,6 +11,18 @@ else
   exit
 fi
 
+echo "Building for $buildtype"
+
+if [ -z $2 ]
+then
+  compiler=gcc
+else
+  compiler=$2
+fi
+
+echo "Using compiler $compiler"
+
+
 builddir=build-$buildtype
 
 if [ ! -d $builddir ]
@@ -23,6 +35,6 @@ cd $builddir
 
 pwd
 
-cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${buildtype^} -DCMAKE_C_COMPILER=/bin/clang ..
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=${buildtype^} -DCMAKE_C_COMPILER=$compiler ..
 
 cd ..
