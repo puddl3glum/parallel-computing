@@ -1,6 +1,10 @@
 # executables
 conway
 
+# slurm output files
+*.o*
+*.i*
+
 # Prerequisites
 *.d
 
