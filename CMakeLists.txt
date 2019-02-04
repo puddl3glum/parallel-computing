@@ -56,6 +56,17 @@ if (${CMAKE_C_COMPILER_ID} MATCHES "GNU")
     "-Wextra"
     "-Wshadow"
     )
+elseif (${CMAKE_C_COMPILER_ID} MATCHES "Intel")
+  target_compile_options(${PROJECT} PUBLIC
+    "$<$<CONFIG:RELEASE>:-O3>"
+    "$<$<CONFIG:DEBUG>:-Og>"
+    "$<$<CONFIG:DEBUG>:-gdwarf>"
+    "$<$<CONFIG:DEBUG>:-DDEBUG>"
+    "-Wall"
+    "-Wextra"
+    "-Wshadow"
+    "--std=gnu99"
+    )
 elseif (${CMAKE_C_COMPILER_ID} MATCHES "Clang")
   target_compile_options(${PROJECT} PUBLIC
     "$<$<CONFIG:RELEASE>:-O3>"
