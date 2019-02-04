@@ -4,8 +4,8 @@ total=0
 
 runs=3
 
-dim=10000
-gen=10000
+dim=$1
+gen=$2
 
 for i in `seq 1 $runs`;
 do
