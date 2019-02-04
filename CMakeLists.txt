@@ -41,8 +41,10 @@ else()
 
 endif()
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp")
-# target_link_libraries(${PROJECT} OpenMP)
+if (NOT ${CMAKE_C_COMPILER_ID} MATCHES "Intel")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp")
+  # target_link_libraries(${PROJECT} OpenMP)
+endif()
 
 # gcc and clang specific flags
 MESSAGE(STATUS "CMAKE_C_COMPILER_ID : " ${CMAKE_C_COMPILER_ID})
@@ -66,6 +68,7 @@ elseif (${CMAKE_C_COMPILER_ID} MATCHES "Intel")
     "-Wextra"
     "-Wshadow"
     "-std=gnu99"
+    "-openmp"
     )
 elseif (${CMAKE_C_COMPILER_ID} MATCHES "Clang")
   target_compile_options(${PROJECT} PUBLIC
