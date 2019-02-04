@@ -68,7 +68,7 @@ elseif (${CMAKE_C_COMPILER_ID} MATCHES "Intel")
     "-Wextra"
     "-Wshadow"
     "-std=gnu99"
-    "-openmp"
+    "-qopenmp"
     )
 elseif (${CMAKE_C_COMPILER_ID} MATCHES "Clang")
   target_compile_options(${PROJECT} PUBLIC
