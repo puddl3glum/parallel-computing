@@ -57,6 +57,7 @@ if (${CMAKE_C_COMPILER_ID} MATCHES "GNU")
     "-Wall"
     "-Wextra"
     "-Wshadow"
+    "-std=gnu99"
     )
 elseif (${CMAKE_C_COMPILER_ID} MATCHES "Intel")
   target_compile_options(${PROJECT} PUBLIC
