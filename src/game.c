@@ -4,8 +4,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <time.h>
-#include <omp.h>
-#include <sys/sysinfo.h>
 
 #include "game.h"
 
@@ -114,10 +112,6 @@ void simgen(board_t board) {
   // copy old board to new board
   copyboard(temp, board);
 
-  // this program is cpu-heavy. 1 proc per thread
-  omp_set_num_threads(get_nprocs());
-
-  # pragma omp parallel for
   for (size_t row = 1; row <= board.row; row++) {
     for (size_t col = 1; col <= board.col; col++) {
       

@@ -31,7 +31,7 @@ if(CMAKE_BUILD_TYPE MATCHES "Debug")
     )
 
   # target_link_libraries(${PROJECT} SDL2)
-  set(PROGRAM_LIBS SDL2)
+  # set(PROGRAM_LIBS SDL2)
 
 else()
   add_executable(${PROJECT}
@@ -69,7 +69,11 @@ elseif (${CMAKE_C_COMPILER_ID} MATCHES "Intel")
     "-Wshadow"
     "-std=gnu99"
     "-qopenmp"
+    # "-qopenmp-link=static"
+    "-qno-openmp"
+    # "-static-intel"
     )
+
 elseif (${CMAKE_C_COMPILER_ID} MATCHES "Clang")
   target_compile_options(${PROJECT} PUBLIC
     "$<$<CONFIG:RELEASE>:-O3>"
@@ -92,5 +96,8 @@ target_link_libraries(${PROJECT}
   "$<$<C_COMPILER_ID:Clang>:-fsanitize=integer>"
   "$<$<C_COMPILER_ID:Clang>:-fsanitize=undefined>"
   "$<$<C_COMPILER_ID:Clang>:-fsanitize=vptr>"
+  # "$<$<C_COMPILER_ID:Intel>:OpenMP>"
+  # "$<$<C_COMPILER_ID:Intel>:-lgomp>"
+  "$<$<CONFIG:DEBUG>:SDL2>"
   )
 
