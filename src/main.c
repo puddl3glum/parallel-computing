@@ -7,10 +7,10 @@
 #include "main.h"
 #include "game.h"
 
-#ifdef DEBUG
-  #include <SDL2/SDL.h>
-  #include "draw.h"
-#endif
+// #ifdef DEBUG
+  // #include <SDL2/SDL.h>
+  // #include "draw.h"
+// #endif
 
 int main(int argc, char* argv[]) {
 
@@ -60,14 +60,14 @@ int main(int argc, char* argv[]) {
   
   // uint32_t seed = (uint32_t) strtoul(argv[4], NULL, 10);
 
-#ifdef DEBUG
+// #ifdef DEBUG
   // SDL_Event event;
-  SDL_Renderer* renderer;
-  SDL_Window* window;
+  // SDL_Renderer* renderer;
+  // SDL_Window* window;
 
-  SDL_Init(SDL_INIT_VIDEO);
-  SDL_CreateWindowAndRenderer((int) width, (int) height, 0, &window, &renderer);
-#endif
+  // SDL_Init(SDL_INIT_VIDEO);
+  // SDL_CreateWindowAndRenderer((int) width, (int) height, 0, &window, &renderer);
+// #endif
 
 
   // Read in board state
@@ -82,9 +82,9 @@ int main(int argc, char* argv[]) {
 
 #ifdef DEBUG
     // Visualize
-    drawboard(renderer, board);
-    // printfullboard(board);
-    // puts("");
+    // drawboard(renderer, board);
+    printfullboard(board);
+    puts("");
 #endif
   
     // Simulate generation
@@ -95,11 +95,11 @@ int main(int argc, char* argv[]) {
     // break;
   }
   
-#ifdef DEBUG
-  SDL_DestroyRenderer(renderer);
-  SDL_DestroyWindow(window);
-  SDL_Quit();
-#endif
+// #ifdef DEBUG
+  // SDL_DestroyRenderer(renderer);
+  // SDL_DestroyWindow(window);
+  // SDL_Quit();
+// #endif
   
   // cleanup
   freecells(board);
