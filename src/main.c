@@ -25,6 +25,7 @@ int main(int argc, char* argv[]) {
         break;
       default:
         fprintf(stderr, "USAGE: %s [OPTION...] width height generations\n", argv[0]);
+        exit(0);
         break;
     }
   
@@ -32,7 +33,7 @@ int main(int argc, char* argv[]) {
 
 
   if (optind >= argc) {
-    fprintf(stderr, "Expected arguments after options");
+    fprintf(stderr, "Expected arguments after options\n");
     exit(EXIT_FAILURE);
   }
 
