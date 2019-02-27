@@ -205,9 +205,10 @@ void simgen(board_t board) {
   copyboard(temp, board);
 
   // this program is cpu-heavy. 1 proc per thread
-  omp_set_num_threads(get_nprocs());
+  // omp_set_num_threads(get_nprocs());
 
-  # pragma omp parallel for
+  # pragma omp distribute parallel for num_threads(get_nprocs()) collapse(2)
+  // # pragma omp parallel for
   for (size_t row = 1; row <= board.row; row++) {
     for (size_t col = 1; col <= board.col; col++) {
       
