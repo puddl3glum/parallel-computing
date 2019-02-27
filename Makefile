@@ -8,7 +8,10 @@ target = bin/$(project)
 all : $(target)
 
 $(target) : $(src) 
-	$(CC) -O3 -fopenmp -std=gnu99 -o $(target) $(dflags)  $(src)
+	$(CC) $(cflags) -fopenmp -std=gnu99 -o $(target) $(dflags)  $(src)
+
+release : cflags = -O3
+release : $(target)
 
 debug : dflags = -DDEBUG
 debug : $(target)
