@@ -5,6 +5,7 @@ CC = gcc
 
 target = bin/$(project)
 
+cflags = -Wall
 ompflags = -fopenmp
 
 all : $(target)
@@ -20,10 +21,10 @@ intel-debug : debug intel
 
 intel-release : release intel
 
-release : cflags = -O3
+release : cflags = -O2
 release : $(target)
 
-debug : dflags = -DDEBUG
+debug : dflags = -DDEBUG -g
 debug : $(target)
 
 clean:

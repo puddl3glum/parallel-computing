@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <time.h>
 #include <unistd.h>
+#include <omp.h>
 
 #include "main.h"
 #include "game.h"
@@ -12,19 +13,33 @@
   // #include "draw.h"
 // #endif
 
+
+int getopt(int argc, char * const argv[], const char *optstring);
+extern char *optarg;
+extern int optind, opterr, optopt;
+
 int main(int argc, char* argv[]) {
 
   int opt;
   uint32_t seed = (uint32_t) time(NULL);
 
+  uint32_t threads = 1;
 
-  while ((opt = getopt(argc, argv, "s:")) != -1) {
+
+  while ((opt = getopt(argc, argv, "t:s:h")) != -1) {
     switch(opt) {
       case 's':
         seed = (uint32_t) strtoul(optarg, NULL, 10);
         break;
+      case 't':
+        threads = strtoul(optarg, NULL, 10);
+        break;
+      case 'h':
       default:
         fprintf(stderr, "USAGE: %s [OPTION...] width height generations\n", argv[0]);
+        fprintf(stderr, "\n");
+        fprintf(stderr, "-s[seed]\tSeed for the random number generator.\n");
+        fprintf(stderr, "-s[threads]\tSet the number of threads for the program. Default: 1.\n");
         exit(0);
         break;
     }
@@ -32,11 +47,10 @@ int main(int argc, char* argv[]) {
   }
 
 
-  if (optind >= argc) {
-    fprintf(stderr, "Expected arguments after options\n");
+  if (argc - optind < 3) {
+    fprintf(stderr, "ERROR: Missing required arguments for width, height, and generations.\n");
     exit(EXIT_FAILURE);
   }
-
 
   uint64_t width = strtoul(argv[0 + optind], NULL, 10);
   uint64_t height = strtoul(argv[1 + optind], NULL, 10);
@@ -75,24 +89,34 @@ int main(int argc, char* argv[]) {
   // Randomize board state
   board_t board = randomboard(width, height, seed);
 
+  temp = blankboard(width, height);
+
   // get new cyclesum tracker
   cyclesum_t cyclesum = newcyclesum(width, height, maxcycles);
 
-  for (uint64_t gen = 0; gen < generations; gen++) {
+  # pragma omp parallel num_threads(threads)
+  # pragma omp target teams num_teams(1)
+  {
+
+    // omp_set_num_threads(threads);
+
+    for (uint64_t gen = 0; gen < generations; gen++) {
 
 #ifdef DEBUG
-    // Visualize
-    // drawboard(renderer, board);
-    printfullboard(board);
-    puts("");
+      // Visualize
+      // drawboard(renderer, board);
+      printfullboard(board);
+      puts("");
 #endif
-  
-    // Simulate generation
-    simgen(board);
-
-    if ( checkcycles(&cyclesum, board) ) break;
     
-    // break;
+      // Simulate generation
+      simgen(board);
+
+      if ( checkcycles(&cyclesum, board) ) break;
+      
+      // break;
+    }
+
   }
   
 // #ifdef DEBUG
@@ -103,6 +127,7 @@ int main(int argc, char* argv[]) {
   
   // cleanup
   freecells(board);
+  freecells(temp);
   freecyclesum(cyclesum);
 }
 

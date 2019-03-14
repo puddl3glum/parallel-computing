@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <omp.h>
-#include <sys/sysinfo.h>
+// #include <sys/sysinfo.h>
 
 #include "game.h"
 
@@ -17,6 +17,8 @@ void copyboard(board_t, board_t);
 board_t blankboard(const uint64_t, const uint64_t);
 cell_t** blankcells(const uint64_t, const uint64_t);
 bool arraycomp(uint64_t*, uint64_t*, uint64_t);
+
+extern board_t temp;
 
 cyclesum_t newcyclesum(const uint64_t row, const uint64_t col, uint64_t maxcycles) {
   /*
@@ -199,7 +201,7 @@ void simgen(board_t board) {
 
 
   // create temp board
-  board_t temp = blankboard(board.row, board.col);
+  // board_t temp = blankboard(board.row, board.col);
 
   // copy old board to new board
   copyboard(temp, board);
@@ -207,11 +209,12 @@ void simgen(board_t board) {
   // this program is cpu-heavy. 1 proc per thread
   // omp_set_num_threads(get_nprocs());
 
-  # pragma omp distribute parallel for num_threads(get_nprocs()) collapse(2)
-  // # pragma omp parallel for
+  # pragma omp distribute parallel for collapse(2)
   for (size_t row = 1; row <= board.row; row++) {
     for (size_t col = 1; col <= board.col; col++) {
-      
+
+      // printf("%d\n", omp_get_num_threads());
+
       // copy old cell to new cell
       // no pointer needed to val which won't be changed
       cell_t tempcell = temp.cells[row][col];
@@ -230,7 +233,7 @@ void simgen(board_t board) {
     }
   }
 
-  freecells(temp);
+  // freecells(temp);
 }
 
 void copyboard(board_t dest, board_t src) {
