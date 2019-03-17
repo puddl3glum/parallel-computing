@@ -94,8 +94,10 @@ int main(int argc, char* argv[]) {
   // get new cyclesum tracker
   cyclesum_t cyclesum = newcyclesum(width, height, maxcycles);
 
+  double start = omp_get_wtime();
+
   # pragma omp parallel num_threads(threads)
-  # pragma omp target teams num_teams(1)
+  // # pragma omp target teams num_teams(1)
   {
 
     // omp_set_num_threads(threads);
@@ -118,6 +120,10 @@ int main(int argc, char* argv[]) {
     }
 
   }
+
+  double end = omp_get_wtime();
+
+  printf("%f\n", end - start);
   
 // #ifdef DEBUG
   // SDL_DestroyRenderer(renderer);

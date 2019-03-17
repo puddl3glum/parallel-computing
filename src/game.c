@@ -209,7 +209,7 @@ void simgen(board_t board) {
   // this program is cpu-heavy. 1 proc per thread
   // omp_set_num_threads(get_nprocs());
 
-  # pragma omp distribute parallel for collapse(2)
+  # pragma omp target teams distribute parallel for collapse(2)
   for (size_t row = 1; row <= board.row; row++) {
     for (size_t col = 1; col <= board.col; col++) {
 
