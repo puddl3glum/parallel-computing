@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include <time.h>
 #include <unistd.h>
-#include <omp.h>
 
 #include "main.h"
 #include "game.h"
@@ -56,7 +55,7 @@ int main(int argc, char* argv[]) {
   uint64_t height = strtoul(argv[1 + optind], NULL, 10);
   uint64_t generations = strtoul(argv[2 + optind], NULL, 10);
 
-  const uint64_t maxcycles = 12;
+  const uint64_t maxcycles = 3;
 
   // printf("%ld %ld %ld\n", width, height, generations);
 
@@ -94,36 +93,25 @@ int main(int argc, char* argv[]) {
   // get new cyclesum tracker
   cyclesum_t cyclesum = newcyclesum(width, height, maxcycles);
 
-  double start = omp_get_wtime();
 
-  # pragma omp parallel num_threads(threads)
-  // # pragma omp target teams num_teams(1)
-  {
-
-    // omp_set_num_threads(threads);
-
-    for (uint64_t gen = 0; gen < generations; gen++) {
+  for (uint64_t gen = 0; gen < generations; gen++) {
 
 #ifdef DEBUG
-      // Visualize
-      // drawboard(renderer, board);
-      printfullboard(board);
-      puts("");
+    // Visualize
+    // drawboard(renderer, board);
+    printfullboard(board);
+    puts("");
 #endif
+  
+    // Simulate generation
+    simgen(board);
+
+    if ( checkcycles(&cyclesum, board) ) break;
     
-      // Simulate generation
-      simgen(board);
-
-      if ( checkcycles(&cyclesum, board) ) break;
-      
-      // break;
-    }
-
+    // break;
   }
 
-  double end = omp_get_wtime();
 
-  printf("%f\n", end - start);
   
 // #ifdef DEBUG
   // SDL_DestroyRenderer(renderer);
@@ -135,5 +123,6 @@ int main(int argc, char* argv[]) {
   freecells(board);
   freecells(temp);
   freecyclesum(cyclesum);
+    puts("here");
 }
 

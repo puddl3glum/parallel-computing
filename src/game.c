@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include <omp.h>
 // #include <sys/sysinfo.h>
 
 #include "game.h"
@@ -33,7 +32,7 @@ cyclesum_t newcyclesum(const uint64_t row, const uint64_t col, uint64_t maxcycle
   for (size_t x = 0; x < maxcycles; x++) {
 
     // create an array for holding row sums of length col
-    sums[x] = calloc(sizeof(uint64_t), col);
+    sums[x] = calloc(sizeof(uint64_t), row);
 
   }
 
@@ -73,17 +72,17 @@ bool checkcycles(cyclesum_t* cyclesum, board_t board) {
 
   // sum the alive cells in the rows of the board
 
-  for (size_t x = 1; x <= board.col; x++ ) {
+  for (size_t row = 1; row <= board.row; row++ ) {
     uint64_t sum = 0;
 
-    for (size_t y = 1; y <= board.row; y++) {
-      if (board.cells[x][y].alive) {
+    for (size_t col = 1; col <= board.col; col++) {
+      if (board.cells[row][col].alive) {
         sum++;
       }
     }
 
     // set sum to cyclesum current
-    cyclesum->sums[cyclesum->current][x - 1] = sum;
+    cyclesum->sums[cyclesum->current][row - 1] = sum;
   }
 
   // compare current to other cycles
@@ -174,7 +173,6 @@ void incneighbors(board_t board, const uint64_t row, const uint64_t col) {
       if (x == 0 && y == 0) continue;
 
       // printf("\tCell neighbor: (%ld, %ld)\n", col + y, row + x);
-      # pragma omp atomic
       board.cells[(int64_t) row + x][(int64_t) col + y].neighbors++;
     }
   }
@@ -191,7 +189,6 @@ void decneighbors(board_t board, const uint64_t row, const uint64_t col) {
 
       if (x == 0 && y == 0) continue;
 
-      # pragma omp atomic
       board.cells[(int64_t) row + x][(int64_t) col + y].neighbors--;
     }
   }
@@ -209,7 +206,6 @@ void simgen(board_t board) {
   // this program is cpu-heavy. 1 proc per thread
   // omp_set_num_threads(get_nprocs());
 
-  # pragma omp target teams distribute parallel for collapse(2)
   for (size_t row = 1; row <= board.row; row++) {
     for (size_t col = 1; col <= board.col; col++) {
 
