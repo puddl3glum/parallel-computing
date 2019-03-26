@@ -69,10 +69,11 @@ int main(int argc, char* argv[]) {
 
   height /= game.threads;
 
-  // Randomize board state
-  board_t init_board = randomboard(width, height, seed);
+  // printf("%d\n", game.rank);
+  int seed_start = game.rank;
 
-  cur_gen = blankboard(width, height / game.threads);
+  // Randomize board state
+  cur_gen = randomboard(width, height, seed_start);
 
   // allocate a board for the next state
   next_gen = blankboard(width, height);
@@ -90,20 +91,6 @@ int main(int argc, char* argv[]) {
     step_generation(cur_gen, next_gen);
     copyboard(game, cur_gen, next_gen);
 
-  }
-
-  if (game.threads > 1) {
-  
-    MPI_Gather(
-        cur_gen.cells,
-        height / game.threads,
-        MPI_UINT8_T,
-        init_board.cells,
-        height / game.threads,
-        MPI_UINT8_T,
-        0,
-        MPI_COMM_WORLD
-        );
   }
 
   // cleanup

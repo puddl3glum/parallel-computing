@@ -10,7 +10,7 @@ typedef struct {
 typedef struct {
   uint64_t width;
   uint64_t height;
-  cell_t* cells;
+  cell_t** cells;
 } board_t;
 
 typedef struct {
