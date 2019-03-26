@@ -1,0 +1,26 @@
+setting dmc scratch directory
+ 
+============================================================
+=====         Summary of your script job               =====
+============================================================
+  The script file is: run-hw4.sh
+  The time limit is 24:00:00 HH:MM:SS.
+  The target directory is: /home/uabcls16/parallel-computing
+  The working directory is:  /scratch-local/uabcls16.mpi-blocking-16.254403
+  The memory limit is: 2gb
+  The job will start running after: 2019-03-26T16:49:07
+  Job Name: mpi-blocking-16
+  Virtual queue: class
+  QOS: --qos=class
+  Constraints: --constraint=dmc
+  Using  16  cores on master node  dmc201
+  Node list:  dmc201
+  Nodes:  dmc201 dmc201 dmc201 dmc201 dmc201 dmc201 dmc201 dmc201 dmc201 dmc201 dmc201 dmc201 dmc201 dmc201 dmc201 dmc201
+  Command typed:
+/apps/scripts/run_script run-hw4.sh     
+  Queue submit command:
+sbatch --qos=class -J mpi-blocking-16 --begin=2019-03-26T16:49:07 --requeue --mail-user=wjsetzer@uab.edu -o mpi-blocking-16.o254403 -t 24:00:00 -N 1-1 -n 16 --mem-per-cpu=125mb --constraint=dmc  
+607.15
+605.33
+606.21
+606.23000000000000000000

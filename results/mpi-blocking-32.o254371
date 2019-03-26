@@ -1,0 +1,53 @@
+setting dmc scratch directory
+ 
+============================================================
+=====         Summary of your script job               =====
+============================================================
+  The script file is: run-hw4.sh
+  The time limit is 24:00:00 HH:MM:SS.
+  The target directory is: /home/uabcls16/parallel-computing
+  The working directory is:  /scratch-local/uabcls16.mpi-blocking-32.254371
+  The memory limit is: 1gb
+  The job will start running after: 2019-03-26T16:07:31
+  Job Name: mpi-blocking-32
+  Virtual queue: class
+  QOS: --qos=class
+  Constraints: --constraint=dmc
+  Using  16  cores on master node  dmc4
+  Node list:  dmc4
+  Nodes:  dmc4 dmc4 dmc4 dmc4 dmc4 dmc4 dmc4 dmc4 dmc4 dmc4 dmc4 dmc4 dmc4 dmc4 dmc4 dmc4
+  Command typed:
+/apps/scripts/run_script run-hw4.sh     
+  Queue submit command:
+sbatch --qos=class -J mpi-blocking-32 --begin=2019-03-26T16:07:31 --requeue --mail-user=wjsetzer@uab.edu -o mpi-blocking-32.o254371 -t 24:00:00 -N 1-1 -n 16 --mem-per-cpu=62mb --constraint=dmc  
+-------------------------------------------------------------------------- There are not enough slots available in the system to satisfy the 32 slots that were requested by the application: ./bin/conway Either request fewer slots for your application, or make more slots available for use. -------------------------------------------------------------------------- 0.12
+(standard_in) 1: syntax error
+(standard_in) 2: illegal character: T
+(standard_in) 2: syntax error
+(standard_in) 3: syntax error
+(standard_in) 3: illegal character: :
+Runtime error (func=(main), adr=5): Divide by zero
+(standard_in) 6: syntax error
+(standard_in) 7: syntax error
+(standard_in) 8: syntax error
+-------------------------------------------------------------------------- There are not enough slots available in the system to satisfy the 32 slots that were requested by the application: ./bin/conway Either request fewer slots for your application, or make more slots available for use. -------------------------------------------------------------------------- 0.08
+(standard_in) 1: syntax error
+(standard_in) 2: illegal character: T
+(standard_in) 2: syntax error
+(standard_in) 3: syntax error
+(standard_in) 3: illegal character: :
+Runtime error (func=(main), adr=5): Divide by zero
+(standard_in) 6: syntax error
+(standard_in) 7: syntax error
+(standard_in) 8: syntax error
+-------------------------------------------------------------------------- There are not enough slots available in the system to satisfy the 32 slots that were requested by the application: ./bin/conway Either request fewer slots for your application, or make more slots available for use. -------------------------------------------------------------------------- 0.08
+(standard_in) 1: syntax error
+(standard_in) 2: illegal character: T
+(standard_in) 2: syntax error
+(standard_in) 3: syntax error
+(standard_in) 3: illegal character: :
+Runtime error (func=(main), adr=5): Divide by zero
+(standard_in) 6: syntax error
+(standard_in) 7: syntax error
+(standard_in) 8: syntax error
+.02666666666666666666
