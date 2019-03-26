@@ -141,40 +141,49 @@ void copyboard(game_t game, board_t dest, board_t src) {
     int bottom = (game.rank + 1) % game.threads;
 
     MPI_Status status;
+    MPI_Request send_request, recv_request;
 
-    MPI_Send(
+    MPI_Isend(
         src.cells[1],
         (int) src.width + 2,
         MPI_UINT8_T,
         top,
         0,
-        MPI_COMM_WORLD);
+        MPI_COMM_WORLD,
+        &send_request);
 
-    MPI_Recv(
+    MPI_Irecv(
         src.cells[src.height + 1],
         (int) src.width + 2,
         MPI_UINT8_T,
         bottom,
         0,
         MPI_COMM_WORLD,
-        &status);
+        &recv_request);
 
-    MPI_Send(
+    MPI_Wait(&send_request, &status);
+    MPI_Wait(&recv_request, &status);
+
+    MPI_Isend(
         src.cells[src.height],
         (int) src.width + 2,
         MPI_UINT8_T,
         top,
         1,
-        MPI_COMM_WORLD);
+        MPI_COMM_WORLD,
+        &send_request);
 
-    MPI_Recv(
+    MPI_Irecv(
         src.cells[0],
         (int) src.width + 2,
         MPI_UINT8_T,
         bottom,
         1,
         MPI_COMM_WORLD,
-        &status);
+        &recv_request);
+
+    MPI_Wait(&send_request, &status);
+    MPI_Wait(&recv_request, &status);
   }
   
   // copy the left and right of the board
