@@ -1,6 +1,7 @@
 
 project=conway
-CC = gcc
+# CC = gcc
+CC = mpicc
 
 src = main.c game.c
 srcs = $(addprefix src/, $(src))
@@ -8,12 +9,11 @@ srcs = $(addprefix src/, $(src))
 target = bin/$(project)
 
 cflags = -Wall
-ompflags = -fopenmp
 
 all : $(target)
 
 $(target) : $(srcs) include/*
-	$(CC) -Iinclude $(cflags) $(ompflags) -std=gnu99 -o $(target) $(dflags)  $(srcs)
+	$(CC) -Iinclude $(cflags) -std=gnu11 -o $(target) $(dflags)  $(srcs)
 
 intel : ompflags = -qopenmp -qopenmp-link static
 intel : CC = icc

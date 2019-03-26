@@ -4,14 +4,10 @@
 #include <time.h>
 #include <unistd.h>
 
+#include <mpi.h>
+
 #include "main.h"
 #include "game.h"
-
-// #ifdef DEBUG
-  // #include <SDL2/SDL.h>
-  // #include "draw.h"
-// #endif
-
 
 int getopt(int argc, char * const argv[], const char *optstring);
 extern char *optarg;
@@ -19,19 +15,17 @@ extern int optind, opterr, optopt;
 
 int main(int argc, char* argv[]) {
 
+  board_t cur_gen;
+  board_t next_gen;
+  game_t game;
+
   int opt;
   uint32_t seed = (uint32_t) time(NULL);
-
-  uint32_t threads = 1;
-
 
   while ((opt = getopt(argc, argv, "t:s:h")) != -1) {
     switch(opt) {
       case 's':
         seed = (uint32_t) strtoul(optarg, NULL, 10);
-        break;
-      case 't':
-        threads = strtoul(optarg, NULL, 10);
         break;
       case 'h':
       default:
@@ -55,74 +49,67 @@ int main(int argc, char* argv[]) {
   uint64_t height = strtoul(argv[1 + optind], NULL, 10);
   uint64_t generations = strtoul(argv[2 + optind], NULL, 10);
 
-  const uint64_t maxcycles = 3;
+  // Set up openmpi
+  MPI_Init(&argc, &argv);
 
-  // printf("%ld %ld %ld\n", width, height, generations);
+  MPI_Comm_size(MPI_COMM_WORLD, &game.threads);
+  MPI_Comm_rank(MPI_COMM_WORLD, &game.rank);
 
-  // printf("%ld\n", width);
+  // cut down the board size for each process
+  // height /= game.threads;
 
-  // if (argc < 4) {
-  //  return 1;
-  // }
+  /*
+  if (game.rank == 0) {
+    printf("Width: %lu, Height: %lu, Generations: %lu, Threads: %d\n",
+            width * (uint32_t)game.threads,
+            height,
+            generations,
+            game.threads);
+  }*/
 
+  height /= game.threads;
 
-  // int boardwidth = 1000;
-  // int boardheight = 1000;
-
-  // int maxgenerations = 1000;
-  
-  // uint32_t seed = (uint32_t) strtoul(argv[4], NULL, 10);
-
-// #ifdef DEBUG
-  // SDL_Event event;
-  // SDL_Renderer* renderer;
-  // SDL_Window* window;
-
-  // SDL_Init(SDL_INIT_VIDEO);
-  // SDL_CreateWindowAndRenderer((int) width, (int) height, 0, &window, &renderer);
-// #endif
-
-
-  // Read in board state
-  // OR
   // Randomize board state
-  board_t board = randomboard(width, height, seed);
+  board_t init_board = randomboard(width, height, seed);
 
-  temp = blankboard(width, height);
+  cur_gen = blankboard(width, height / game.threads);
 
-  // get new cyclesum tracker
-  cyclesum_t cyclesum = newcyclesum(width, height, maxcycles);
-
+  // allocate a board for the next state
+  next_gen = blankboard(width, height);
 
   for (uint64_t gen = 0; gen < generations; gen++) {
 
 #ifdef DEBUG
     // Visualize
     // drawboard(renderer, board);
-    printfullboard(board);
+    printfullboard(cur_gen);
     puts("");
 #endif
   
     // Simulate generation
-    simgen(board);
+    step_generation(cur_gen, next_gen);
+    copyboard(game, cur_gen, next_gen);
 
-    if ( checkcycles(&cyclesum, board) ) break;
-    
-    // break;
   }
 
+  if (game.threads > 1) {
+  
+    MPI_Gather(
+        cur_gen.cells,
+        height / game.threads,
+        MPI_UINT8_T,
+        init_board.cells,
+        height / game.threads,
+        MPI_UINT8_T,
+        0,
+        MPI_COMM_WORLD
+        );
+  }
 
-  
-// #ifdef DEBUG
-  // SDL_DestroyRenderer(renderer);
-  // SDL_DestroyWindow(window);
-  // SDL_Quit();
-// #endif
-  
   // cleanup
-  freecells(board);
-  freecells(temp);
-  freecyclesum(cyclesum);
-    puts("here");
+  freecells(cur_gen);
+  freecells(next_gen);
+
+  MPI_Finalize();
 }
 
