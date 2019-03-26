@@ -142,12 +142,15 @@ void copyboard(game_t game, board_t dest, board_t src) {
 
     MPI_Status status;
 
-    MPI_Sendrecv(
+    MPI_Send(
         src.cells[1],
         (int) src.width + 2,
         MPI_UINT8_T,
         top,
         0,
+        MPI_COMM_WORLD);
+
+    MPI_Recv(
         src.cells[src.height + 1],
         (int) src.width + 2,
         MPI_UINT8_T,
@@ -156,12 +159,15 @@ void copyboard(game_t game, board_t dest, board_t src) {
         MPI_COMM_WORLD,
         &status);
 
-    MPI_Sendrecv(
+    MPI_Send(
         src.cells[src.height],
         (int) src.width + 2,
         MPI_UINT8_T,
         top,
         1,
+        MPI_COMM_WORLD);
+
+    MPI_Recv(
         src.cells[0],
         (int) src.width + 2,
         MPI_UINT8_T,

@@ -20,13 +20,13 @@ int main(int argc, char* argv[]) {
   game_t game;
 
   int opt;
-  uint32_t seed = (uint32_t) time(NULL);
+  // uint32_t seed = (uint32_t) time(NULL);
 
   while ((opt = getopt(argc, argv, "t:s:h")) != -1) {
     switch(opt) {
-      case 's':
-        seed = (uint32_t) strtoul(optarg, NULL, 10);
-        break;
+      // case 's':
+        // seed = (uint32_t) strtoul(optarg, NULL, 10);
+        // break;
       case 'h':
       default:
         fprintf(stderr, "USAGE: %s [OPTION...] width height generations\n", argv[0]);
