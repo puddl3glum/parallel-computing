@@ -152,6 +152,9 @@ void copyboard(game_t game, board_t dest, board_t src) {
         MPI_COMM_WORLD,
         &send_request);
 
+    MPI_Wait(&send_request, &status);
+    MPI_Wait(&recv_request, &status);
+
     MPI_Irecv(
         src.cells[src.height + 1],
         (int) src.width + 2,
@@ -172,6 +175,9 @@ void copyboard(game_t game, board_t dest, board_t src) {
         1,
         MPI_COMM_WORLD,
         &send_request);
+
+    MPI_Wait(&send_request, &status);
+    MPI_Wait(&recv_request, &status);
 
     MPI_Irecv(
         src.cells[0],
