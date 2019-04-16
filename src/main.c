@@ -9,77 +9,85 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <unistd.h>
 
 #include "main.h"
 #include "game.h"
 
-#ifdef DEBUG
-  #include <SDL2/SDL.h>
-  #include "draw.h"
-#endif
+int getopt(int argc, char * const argv[], const char *optstring);
+extern char* optarg;
+extern int optind, opterr, optopt;
 
 int main(int argc, char* argv[]) {
 
-  if (argc < 4) {
-    printf("USAGE: %s SIZE GENERATIONS CHANCE\n", argv[0]);
-    puts("\tSIZE: size of the board");
-    // puts("\tWIDTH: width of the board");
-    // puts("\tHEIGHT: height of the board");
-    puts("\tGENERATIONS: The maximum number of generations to simulate");
-    puts("\tCHANCE: The chance [0, 1] of a cell being alive on initialization.");
-    // puts("\tCYCLE_HISTORY: how far back to check for cycles. suggested: 12");
-    return 1;
+  int opt;
+
+  uint64_t width = 100;
+  uint64_t height = 100;
+  uint64_t generations = 100;
+  double chance = 0.5;
+  size_t seed = 1;
+
+
+  while ((opt = getopt(argc, argv, "s:w:h:g:c:")) != -1) {
+
+    switch(opt) {
+      case 's':
+        // set the seed
+        seed = strtoul(optarg, NULL, 10);
+        break;
+      case 'w':
+        width = strtoul(optarg, NULL, 10);
+        break;
+      case 'h':
+        height = strtoul(optarg, NULL, 10);
+        break;
+      case 'g':
+        generations = strtoul(optarg, NULL, 10);
+        break;
+      case 'c':
+        chance = strtod(optarg, NULL);
+        break;
+      default:
+        printf("USAGE: %s [OPTION]\n", argv[0]);
+        puts("Options:");
+        puts("\ts : The seed to use for the random number generator.");
+        puts("\tw : The width for the board.");
+        puts("\th : The height for the board.");
+        puts("\tg : The number of generations for the game.");
+        puts("\tc : The chance a cell will be alive.");
+        return 0;
+        break;
+    }
+
   }
-
-  // int boardwidth = 1000;
-  // int boardheight = 1000;
-
-  // int maxgenerations = 1000;
-  
-  /*
-  const uint64_t boardwidth = strtoul(argv[1], NULL, 10);
-  const uint64_t boardheight = strtoul(argv[2], NULL, 10);
-  const uint64_t maxgenerations = strtoul(argv[3], NULL, 10);
-  const double chance = strtod(argv[4], NULL);
-  const uint64_t maxcycles = strtoul(argv[5], NULL, 10);
-  */
-
-  const uint64_t boardwidth = strtoul(argv[1], NULL, 10);
-  const uint64_t boardheight = boardwidth;
-  const uint64_t maxgenerations = strtoul(argv[2], NULL, 10);
-  const double chance = strtod(argv[3], NULL);
-  const uint64_t maxcycles = 12;
-
-#ifdef DEBUG
-  // SDL_Event event;
-  SDL_Renderer* renderer;
-  SDL_Window* window;
-
-  SDL_Init(SDL_INIT_VIDEO);
-  SDL_CreateWindowAndRenderer((int) boardwidth, (int) boardheight, 0, &window, &renderer);
-#endif
 
   // Read in board state
   // OR
   // Randomize board state
-  board_t board = randomboard(boardwidth, boardheight, chance);
-
+  board_t current_gen = random_board(width, height, chance, seed);
+  board_t next_gen = new_board(width, height);
   // get new cyclesum tracker
-  cyclesum_t cyclesum = newcyclesum(boardwidth, boardheight, maxcycles);
+  // cyclesum_t cyclesum = newcyclesum(width, height, maxcycles);
 
-  for (uint64_t gen = 0; gen < maxgenerations; gen++) {
+  for (uint64_t gen = 0; gen < generations; gen++) {
 
 #ifdef DEBUG
     // Visualize
-    drawboard(renderer, board);
-    // printboard(board);
-    // puts("");
+    printboard(current_gen);
+    puts("");
 #endif
   
     // Simulate generation
-    simgen(board);
+    advance_board(current_gen, next_gen);
 
-    if ( checkcycles(&cyclesum, board) ) break;
+    board_t temp;
+
+    temp = current_gen;
+    current_gen = next_gen;
+    next_gen = temp;
+
+    // if ( checkcycles(&cyclesum, board) ) break;
 
     // compute the checksum of the board
     // sum alive cells in each row
@@ -90,14 +98,10 @@ int main(int argc, char* argv[]) {
     // break;
   }
   
-#ifdef DEBUG
-  SDL_DestroyRenderer(renderer);
-  SDL_DestroyWindow(window);
-  SDL_Quit();
-#endif
   
   // cleanup
-  freecells(board);
-  freecyclesum(cyclesum);
+  free_board(current_gen);
+  free_board(next_gen);
+  // freecyclesum(cyclesum);
 }
 

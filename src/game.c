@@ -14,27 +14,35 @@
 
 #include "game.h"
 
-void incneighbors(board_t, const uint64_t, const uint64_t);
-void decneighbors(board_t, const uint64_t, const uint64_t);
-void copyboard(board_t, board_t);
-board_t blankboard(const uint64_t, const uint64_t);
-cell_t** blankcells(const uint64_t, const uint64_t);
+int check_neighbors(board_t, const uint64_t, const uint64_t);
+void copy_board(board_t, board_t);
 bool arraycomp(uint64_t*, uint64_t*, uint64_t);
 
+board_t new_board(const uint64_t height, const uint64_t width) {
+  /*
+   * Return a 1-dimensional array (N+2)x(M+2) long with random values.
+   * The values are initialized from 1..N and 1..M.
+   * The edges are treated as ghost cells.
+   * */
 
-cell_t** blankcells(const uint64_t row, const uint64_t col) {
+  // First and last N+2 are false.
+  // For every chunk, the first and last are false.
+  //
+  // bool** cells = calloc(height + 2, sizeof(bool*));
+  bool** cells = calloc(height + 2, sizeof(bool));
 
-  cell_t** cells = calloc(sizeof(cell_t*), col+2);
-
-  for (size_t r = 0; r < col+2; r++) {
-    cell_t* rowptr = calloc(sizeof(cell_t), row+2);
-    cells[r] = rowptr;
+  for (size_t y = 0; y < height+2; y++) {
+    bool* rowptr = calloc(width+2, sizeof(bool));
+    cells[y] = rowptr;
   }
+  
+  board_t board = {height, width, cells};
 
-  return cells;
+  return board; 
+
 }
 
-board_t blankboard(const uint64_t row, const uint64_t col) {
+board_t random_board(const uint64_t height, const uint64_t width, const double chance, const size_t seed) {
   /*
    * Return a 1-dimensional array (N+2)x(M+2) long with random values.
    * The values are initialized from 1..N and 1..M.
@@ -44,10 +52,25 @@ board_t blankboard(const uint64_t row, const uint64_t col) {
   // First and last N+2 are false.
   // For every chunk, the first and last are false.
   
-  board_t board = {row, col, blankcells(row, col)};
+  // srand((uint32_t)time(NULL));
+  srand(seed);
+
+  board_t board = new_board(height, width);
+
+  for (size_t y = 1; y <= board.height; y++) {
+    for (size_t x = 1; x <= board.width; x++) {
+      int randomnum = rand();
+      bool val = chance > ((double) randomnum / (double) RAND_MAX);
+      if (val) {
+        board.cells[y][x] = true;
+        // not necessarily true, but ensure the cell will be
+        // examined in the first iteration
+        // count_neighbors(board, y, x);
+      }
+    }
+  }
 
   return board; 
-
 }
 
 cyclesum_t newcyclesum(const uint64_t row, const uint64_t col, uint64_t maxcycles) {
@@ -103,25 +126,27 @@ bool checkcycles(cyclesum_t* cyclesum, board_t board) {
 
   // sum the alive cells in the rows of the board
   
-  for (size_t x = 1; x <= board.col; x++ ) {
+  for (size_t y = 1; y <= board.height; y++ ) {
     uint64_t sum = 0;
 
-    for (size_t y = 1; y <= board.row; y++) {
-      if (board.cells[x][y].alive) {
+    for (size_t x = 1; x <= board.width; x++) {
+      if (board.cells[y][x]) {
         sum++;
       }
     }
 
     // set sum to cyclesum current
-    cyclesum->sums[cyclesum->current][x - 1] = sum;
+    cyclesum->sums[cyclesum->current][y - 1] = sum;
   }
 
   // compare current to other cycles
-  for (size_t x = 0; x < cyclesum->maxcycle; x++) {
+  for (size_t y = 0; y < cyclesum->maxcycle; y++) {
     uint64_t currentcycle = cyclesum->current;
 
-    if (x != currentcycle) {
-      if ( arraycomp(cyclesum->sums[x], cyclesum->sums[currentcycle], cyclesum->row)) return true;
+    if (y != currentcycle) {
+      if ( arraycomp(cyclesum->sums[y], cyclesum->sums[currentcycle], cyclesum->row)) {
+        return true;
+      }
     }
   }
 
@@ -132,131 +157,87 @@ bool checkcycles(cyclesum_t* cyclesum, board_t board) {
   return false;
 }
 
-board_t randomboard(const uint64_t rowlen, const uint64_t colsize, const double chance) {
-  /*
-   * Return a 1-dimensional array (N+2)x(M+2) long with random values.
-   * The values are initialized from 1..N and 1..M.
-   * The edges are treated as ghost cells.
-   * */
 
-  // First and last N+2 are false.
-  // For every chunk, the first and last are false.
-  
-  srand((uint32_t)time(NULL));
-
-  board_t board = blankboard(rowlen, colsize);
-
-  for (size_t row = 1; row <= board.row; row++) {
-    for (size_t col = 1; col <= board.col; col++) {
-      int randomnum = rand();
-      bool val = ((double) randomnum / (double) RAND_MAX) > chance;
-      if (val) {
-        board.cells[row][col].alive = true;
-        // not necessarily true, but ensure the cell will be
-        // examined in the first iteration
-        incneighbors(board, row, col);
-      }
-    }
-  }
-
-  return board; 
-}
-
-void incneighbors(board_t board, const uint64_t row, const uint64_t col) {
+int check_neighbors(board_t board, const uint64_t y_pos, const uint64_t x_pos) {
   /*
    * increments the neighbors field of the surrounding neighbor
    * cells.
    * */
 
-  for (int x = -1; x <= 1; x++) {
-    for (int y = -1; y <= 1; y++) {
+  size_t count = 0;
 
-      if (x == 0 && y == 0) continue;
+  for (int y = -1; y <= 1; y++) {
+    for (int x = -1; x <= 1; x++) {
 
-      // printf("\tCell neighbor: (%ld, %ld)\n", col + y, row + x);
-      board.cells[(int64_t) row + y][(int64_t) col + x].neighbors++;
+      if (x == 0 && y == 0) {
+        continue;
+      }
+
+      if (board.cells[y + y_pos][x + x_pos]) {
+        count++;
+      }
     }
   }
+
+  return count;
 }
 
-void decneighbors(board_t board, const uint64_t row, const uint64_t col) {
-  /*
-   * decrements the neighbors field of the surrounding neighbor
-   * cells.
-   * */
-
-  for (int x = -1; x <= 1; x++) {
-    for (int y = -1; y <= 1; y++) {
-
-      if (x == 0 && y == 0) continue;
-
-      board.cells[(int64_t) row + y][(int64_t) col + x].neighbors--;
-    }
-  }
-}
-
-void simgen(board_t board) {
+void advance_board(board_t current_gen, board_t next_gen) {
 
   // create temp board
-  board_t temp = blankboard(board.row, board.col);
 
   // copy old board to new board
-  copyboard(temp, board);
 
   // # pragma omp parallel for
-  for (size_t row = 1; row <= board.row; row++) {
-    for (size_t col = 1; col <= board.col; col++) {
+  for (size_t y = 1; y <= current_gen.height; y++) {
+    for (size_t x = 1; x <= current_gen.width; x++) {
       
-      // copy old cell to new cell
-      // no pointer needed to val which won't be changed
-      cell_t tempcell = temp.cells[row][col];
+      bool current_cell = current_gen.cells[y][x];
+      
+      int count = check_neighbors(current_gen, y, x);
 
-      // fewer than 2 neighbors, cell dies
-      if (tempcell.alive && (tempcell.neighbors < 2 || tempcell.neighbors > 3)) {
+      if (current_cell && ( count > 3 || count < 2)) {
+        current_cell = false;
+      }
+      else if (! current_cell && count == 3) {
+        current_cell = true;
+      }
 
-        board.cells[row][col].alive = false;
-        // update neighbors of surrounding cells
-        decneighbors(board, row, col);
-      }
-      else if (! tempcell.alive && tempcell.neighbors == 3) {
-        board.cells[row][col].alive = true;
-        incneighbors(board, row, col);
-      }
+      next_gen.cells[y][x] = current_cell;
+
     }
   }
-
-  freecells(temp);
 }
 
-void copyboard(board_t dest, board_t src) {
-  for (size_t row = 0; row < src.col + 2; row++) {
-    memcpy(dest.cells[row], src.cells[row], sizeof(cell_t) * src.row + 2);
+void copy_board(board_t dest, board_t src) {
+  for (size_t y = 0; y < src.height + 2; y++) {
+    memcpy(dest.cells[y], src.cells[y], sizeof(bool) * src.height + 2);
   }
 }
 
 void printboard(board_t board) {
-  for (size_t i = 1; i <= board.col; i++ ){
-    for (size_t j = 1; j <= board.row; j++) {
-      printf(board.cells[i][j].alive ? "█" : "░");
+  for (size_t y = 1; y <= board.height; y++ ){
+    for (size_t x = 1; x <= board.width; x++) {
+      printf(board.cells[y][x] ? "█" : "░");
     }
     puts("");
   }
 }
 
 void printfullboard(board_t board) {
-  for (size_t i = 0; i < board.col + 2; i++ ){
-    for (size_t j = 0; j < board.row + 2; j++) {
-      printf(board.cells[i][j].alive ? "█" : "░");
+  for (size_t y = 0; y < board.height + 2; y++ ){
+    for (size_t x = 0; x < board.width + 2; x++) {
+      printf(board.cells[x][y] ? "█" : "░");
     }
     puts("");
   }
 }
 
-void freecells(board_t b) {
-  for (size_t i = 0; i < b.col + 2; i++) {
-    free(b.cells[i]);
+void free_board(board_t board) {
+  for (size_t y = 0; y < board.height + 2; y++) {
+    free(board.cells[y]);
   }
 
-  free(b.cells);
+  free(board.cells);
 }
 
