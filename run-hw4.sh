@@ -6,7 +6,7 @@ total=0
 
 runs=3
 
-threads=16
+threads=1
 width=5000
 height=5000
 gen=5000
