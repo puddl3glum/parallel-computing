@@ -140,8 +140,11 @@ void copyboard(game_t game, board_t dest, board_t src) {
     int top = (game.rank - 1 + game.threads) % game.threads;
     int bottom = (game.rank + 1) % game.threads;
 
-    MPI_Status status;
-    MPI_Request send_request, recv_request;
+    MPI_Status statuses[4];
+    MPI_Request requests[4];
+
+    // MPI_Status status;
+    // MPI_Request send_request, recv_request;
 
     MPI_Isend(
         src.cells[1],
@@ -150,10 +153,10 @@ void copyboard(game_t game, board_t dest, board_t src) {
         top,
         0,
         MPI_COMM_WORLD,
-        &send_request);
+        &requests[0]);
 
-    MPI_Wait(&send_request, &status);
-    MPI_Wait(&recv_request, &status);
+    // MPI_Wait(&send_request, &status);
+    // MPI_Wait(&recv_request, &status);
 
     MPI_Irecv(
         src.cells[src.height + 1],
@@ -162,10 +165,10 @@ void copyboard(game_t game, board_t dest, board_t src) {
         bottom,
         0,
         MPI_COMM_WORLD,
-        &recv_request);
+        &requests[1]);
 
-    MPI_Wait(&send_request, &status);
-    MPI_Wait(&recv_request, &status);
+    // MPI_Wait(&send_request, &status);
+    // MPI_Wait(&recv_request, &status);
 
     MPI_Isend(
         src.cells[src.height],
@@ -174,10 +177,10 @@ void copyboard(game_t game, board_t dest, board_t src) {
         top,
         1,
         MPI_COMM_WORLD,
-        &send_request);
+        &requests[2]);
 
-    MPI_Wait(&send_request, &status);
-    MPI_Wait(&recv_request, &status);
+    // MPI_Wait(&send_request, &status);
+    // MPI_Wait(&recv_request, &status);
 
     MPI_Irecv(
         src.cells[0],
@@ -186,10 +189,12 @@ void copyboard(game_t game, board_t dest, board_t src) {
         bottom,
         1,
         MPI_COMM_WORLD,
-        &recv_request);
+        &requests[3]);
 
-    MPI_Wait(&send_request, &status);
-    MPI_Wait(&recv_request, &status);
+    // MPI_Wait(&send_request, &status);
+    // MPI_Wait(&recv_request, &status);
+    
+    MPI_Waitall(4, requests, statuses);
   }
   
   // copy the left and right of the board
