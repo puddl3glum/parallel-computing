@@ -6,17 +6,18 @@
  * Homework 1
  * */
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <unistd.h>
 
-#include "main.h"
-#include "game.h"
+#include "main.cuh"
+#include "game.cuh"
 
-int getopt(int argc, char * const argv[], const char *optstring);
-extern char* optarg;
-extern int optind, opterr, optopt;
+// int getopt(int argc, char * const argv[], const char *optstring);
+// extern char* optarg;
+// extern int optind, opterr, optopt;
 
 int main(int argc, char* argv[]) {
 
@@ -27,7 +28,7 @@ int main(int argc, char* argv[]) {
   uint64_t height = 100;
   uint64_t generations = 100;
   double chance = 0.5;
-  size_t seed = 1;
+  uint64_t seed = 1;
 
 
   while ((opt = getopt(argc, argv, "s:w:h:g:c:")) != -1) {
@@ -58,36 +59,40 @@ int main(int argc, char* argv[]) {
         puts("\tg : The number of generations for the game.");
         puts("\tc : The chance a cell will be alive.");
         return 0;
-        break;
     }
-
   }
 
   // Read in board state
   // OR
   // Randomize board state
-  board_t current_gen = random_board(height, width, chance, seed);
-  board_t next_gen = new_board(height, width);
+  bool* current_gen = random_board(height, width, chance, seed);
+  bool* next_gen = new_board(height, width);
   // get new cyclesum tracker
   // cyclesum_t cyclesum = newcyclesum(width, height, maxcycles);
+  
+  // create CUDA space
+  bool* cuda_current_gen;
+  bool* cuda_next_gen;
+  cudaMalloc(&cuda_current_gen, (height + 2) * (width + 2) * sizeof(bool));
+  cudaMalloc(&cuda_next_gen, (height + 2) * (width + 2) * sizeof(bool));
+
+  cudaMemcpy(cuda_current_gen, current_gen, (height + 2) * (width + 2), cudaMemcpyHostToDevice);
+  // cudaMemcpy(cuda_next_gen, next_gen, (height + 2) * (width + 2), cudaMemcpyHostToDevice);
+
+  uint64_t blocksize = 1024;
+  uint64_t gridsize = (uint64_t) ceil((float) (height + 2) * (width + 2) / blocksize);
 
   size_t gen = 0;
   for (gen = 0; gen < generations; gen++) {
 
-#ifdef DEBUG
-    // Visualize
-    printboard(current_gen);
-    puts("");
-#endif
-  
     // Simulate generation
-    advance_board(current_gen, next_gen);
+    advance_board<<<gridsize, blocksize>>>(current_gen, next_gen, height, width);
 
-    board_t temp;
+    bool* temp;
 
-    temp = current_gen;
-    current_gen = next_gen;
-    next_gen = temp;
+    temp = cuda_current_gen;
+    cuda_current_gen = cuda_next_gen;
+    cuda_next_gen = temp;
 
     // if ( checkcycles(&cyclesum, board) ) break;
 
@@ -99,10 +104,16 @@ int main(int argc, char* argv[]) {
     
     // break;
   }
+
+  cudaMemcpy(next_gen, cuda_next_gen, (height + 2) * (width + 2), cudaMemcpyDeviceToHost);
+
+#ifdef DEBUG
+  printboard(next_gen, height, width);
+#endif
   
   // cleanup
-  free_board(current_gen);
-  free_board(next_gen);
+  free(current_gen);
+  free(next_gen);
   // freecyclesum(cyclesum);
 }
 
