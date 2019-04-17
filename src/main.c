@@ -70,7 +70,7 @@ int main(int argc, char* argv[]) {
   // get new cyclesum tracker
   // cyclesum_t cyclesum = newcyclesum(width, height, maxcycles);
 
-  for (uint64_t gen = 0; gen < generations; gen++) {
+  for (size_t gen = 0; gen < generations; gen++) {
 
 #ifdef DEBUG
     // Visualize
