@@ -20,6 +20,7 @@ extern int optind, opterr, optopt;
 
 int main(int argc, char* argv[]) {
 
+
   int opt;
 
   uint64_t width = 100;
@@ -65,8 +66,8 @@ int main(int argc, char* argv[]) {
   // Read in board state
   // OR
   // Randomize board state
-  board_t current_gen = random_board(width, height, chance, seed);
-  board_t next_gen = new_board(width, height);
+  board_t current_gen = random_board(height, width, chance, seed);
+  board_t next_gen = new_board(height, width);
   // get new cyclesum tracker
   // cyclesum_t cyclesum = newcyclesum(width, height, maxcycles);
 
@@ -98,7 +99,6 @@ int main(int argc, char* argv[]) {
     
     // break;
   }
-  
   
   // cleanup
   free_board(current_gen);

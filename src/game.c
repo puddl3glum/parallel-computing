@@ -29,7 +29,7 @@ board_t new_board(const uint64_t height, const uint64_t width) {
   // For every chunk, the first and last are false.
   //
   // bool** cells = calloc(height + 2, sizeof(bool*));
-  bool** cells = calloc(height + 2, sizeof(bool));
+  bool** cells = calloc(height + 2, sizeof(bool*));
 
   size_t y = 0;
   for (y = 0; y < height+2; y++) {
@@ -72,6 +72,7 @@ board_t random_board(const uint64_t height, const uint64_t width, const double c
       }
     }
   }
+
 
   return board; 
 }
