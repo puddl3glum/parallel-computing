@@ -194,16 +194,19 @@ uint_fast8_t check_neighbors(const bool* board, const uint64_t height, const uin
 __global__
 void advance_board(const bool* const current_gen, bool* const next_gen, const uint64_t height, const uint64_t width) {
 
-  // create temp board
 
-  // copy old board to new board
+  // uint64_t x = blockDim.x * blockIdx.x + threadIdx.x;
+  // uint64_t y = blockDim.y * blockIdx.y + threadIdx.y;
 
-  // # pragma omp parallel for
-  size_t y = 1;
-  for (y = 1; y <= height; y++) {
-    size_t x = 1;
-    for (x = 1; x <= width; x++) {
-      
+  uint64_t xindex = blockIdx.x * blockDim.x + threadIdx.x;
+  uint64_t yindex = blockIdx.y * blockDim.y + threadIdx.y;
+
+  uint64_t xstride = blockDim.x;
+  uint64_t ystride = blockDim.y;
+
+  for (size_t y = yindex; y <= height; y += ystride) {
+    for (size_t x = xindex; x <= width; x += xstride) {
+
       bool current_cell = current_gen[y * height + x];
 
       uint_fast8_t count = check_neighbors(current_gen, height, width, y, x);
@@ -216,7 +219,6 @@ void advance_board(const bool* const current_gen, bool* const next_gen, const ui
       }
 
       next_gen[y * height + x] = current_cell;
-
     }
   }
 }

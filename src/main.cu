@@ -79,14 +79,14 @@ int main(int argc, char* argv[]) {
   cudaMemcpy(cuda_current_gen, current_gen, (height + 2) * (width + 2), cudaMemcpyHostToDevice);
   // cudaMemcpy(cuda_next_gen, next_gen, (height + 2) * (width + 2), cudaMemcpyHostToDevice);
 
-  uint64_t blocksize = 1024;
-  uint64_t gridsize = (uint64_t) ceil((float) (height + 2) * (width + 2) / blocksize);
+  uint64_t blocksize = 512;
+  uint64_t numblocks =  ((height) * (width) + blocksize - 1) / blocksize;
 
   size_t gen = 0;
   for (gen = 0; gen < generations; gen++) {
 
     // Simulate generation
-    advance_board<<<gridsize, blocksize>>>(current_gen, next_gen, height, width);
+    advance_board<<<numblocks, blocksize>>>(cuda_current_gen, cuda_next_gen, height, width);
 
     bool* temp;
 
@@ -105,13 +105,17 @@ int main(int argc, char* argv[]) {
     // break;
   }
 
-  cudaMemcpy(next_gen, cuda_next_gen, (height + 2) * (width + 2), cudaMemcpyDeviceToHost);
+  cudaDeviceSynchronize();
+
+  cudaMemcpy(current_gen, cuda_current_gen, (height + 2) * (width + 2), cudaMemcpyDeviceToHost);
 
 #ifdef DEBUG
-  printboard(next_gen, height, width);
+  printboard(current_gen, height, width);
 #endif
   
   // cleanup
+  cudaFree(cuda_current_gen);
+  cudaFree(cuda_next_gen);
   free(current_gen);
   free(next_gen);
   // freecyclesum(cyclesum);
