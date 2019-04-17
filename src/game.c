@@ -31,7 +31,8 @@ board_t new_board(const uint64_t height, const uint64_t width) {
   // bool** cells = calloc(height + 2, sizeof(bool*));
   bool** cells = calloc(height + 2, sizeof(bool));
 
-  for (size_t y = 0; y < height+2; y++) {
+  size_t y = 0;
+  for (y = 0; y < height+2; y++) {
     bool* rowptr = calloc(width+2, sizeof(bool));
     cells[y] = rowptr;
   }
@@ -57,8 +58,10 @@ board_t random_board(const uint64_t height, const uint64_t width, const double c
 
   board_t board = new_board(height, width);
 
-  for (size_t y = 1; y <= board.height; y++) {
-    for (size_t x = 1; x <= board.width; x++) {
+  size_t y = 1;
+  for (y = 1; y <= board.height; y++) {
+    size_t x = 1;
+    for (x = 1; x <= board.width; x++) {
       int randomnum = rand();
       bool val = chance > ((double) randomnum / (double) RAND_MAX);
       if (val) {
@@ -83,7 +86,8 @@ cyclesum_t newcyclesum(const uint64_t row, const uint64_t col, uint64_t maxcycle
   // create an array for holding sums of length maxcycle
   uint64_t** const sums = calloc(sizeof(uint64_t*), maxcycles);
 
-  for (size_t x = 0; x < maxcycles; x++) {
+  size_t x = 0;
+  for (x = 0; x < maxcycles; x++) {
 
     // create an array for holding row sums of length col
     sums[x] = calloc(sizeof(uint64_t), col);
@@ -102,7 +106,8 @@ cyclesum_t newcyclesum(const uint64_t row, const uint64_t col, uint64_t maxcycle
 }
 
 void freecyclesum(cyclesum_t cyclesum) {
-  for (size_t x = 0; x < cyclesum.maxcycle; x++) {
+  size_t x = 0;
+  for (x = 0; x < cyclesum.maxcycle; x++) {
     free(cyclesum.sums[x]);
   }
 
@@ -111,7 +116,8 @@ void freecyclesum(cyclesum_t cyclesum) {
 
 bool arraycomp(uint64_t* a, uint64_t* b, uint64_t len) {
 
-  for (size_t x = 0; x < len; x++) {
+  size_t x = 0;
+  for (x = 0; x < len; x++) {
     if (a[x] != b[x]) return false;
   }
 
@@ -126,10 +132,12 @@ bool checkcycles(cyclesum_t* cyclesum, board_t board) {
 
   // sum the alive cells in the rows of the board
   
-  for (size_t y = 1; y <= board.height; y++ ) {
+  size_t y = 1;
+  for (y = 1; y <= board.height; y++ ) {
     uint64_t sum = 0;
 
-    for (size_t x = 1; x <= board.width; x++) {
+    size_t x = 1;
+    for (x = 1; x <= board.width; x++) {
       if (board.cells[y][x]) {
         sum++;
       }
@@ -140,7 +148,7 @@ bool checkcycles(cyclesum_t* cyclesum, board_t board) {
   }
 
   // compare current to other cycles
-  for (size_t y = 0; y < cyclesum->maxcycle; y++) {
+  for (y = 0; y < cyclesum->maxcycle; y++) {
     uint64_t currentcycle = cyclesum->current;
 
     if (y != currentcycle) {
@@ -166,8 +174,10 @@ int check_neighbors(board_t board, const uint64_t y_pos, const uint64_t x_pos) {
 
   size_t count = 0;
 
-  for (int y = -1; y <= 1; y++) {
-    for (int x = -1; x <= 1; x++) {
+  int y = -1;
+  for (y = -1; y <= 1; y++) {
+    int x = -1;
+    for (x = -1; x <= 1; x++) {
 
       if (x == 0 && y == 0) {
         continue;
@@ -189,8 +199,10 @@ void advance_board(board_t current_gen, board_t next_gen) {
   // copy old board to new board
 
   // # pragma omp parallel for
-  for (size_t y = 1; y <= current_gen.height; y++) {
-    for (size_t x = 1; x <= current_gen.width; x++) {
+  size_t y = 1;
+  for (y = 1; y <= current_gen.height; y++) {
+    size_t x = 1;
+    for (x = 1; x <= current_gen.width; x++) {
       
       bool current_cell = current_gen.cells[y][x];
       
@@ -210,14 +222,17 @@ void advance_board(board_t current_gen, board_t next_gen) {
 }
 
 void copy_board(board_t dest, board_t src) {
-  for (size_t y = 0; y < src.height + 2; y++) {
+  size_t y = 0;
+  for (y = 0; y < src.height + 2; y++) {
     memcpy(dest.cells[y], src.cells[y], sizeof(bool) * src.height + 2);
   }
 }
 
 void printboard(board_t board) {
-  for (size_t y = 1; y <= board.height; y++ ){
-    for (size_t x = 1; x <= board.width; x++) {
+  size_t y = 1;
+  for (y = 1; y <= board.height; y++ ){
+    size_t x = 1;
+    for (x = 1; x <= board.width; x++) {
       printf(board.cells[y][x] ? "█" : "░");
     }
     puts("");
@@ -225,8 +240,10 @@ void printboard(board_t board) {
 }
 
 void printfullboard(board_t board) {
-  for (size_t y = 0; y < board.height + 2; y++ ){
-    for (size_t x = 0; x < board.width + 2; x++) {
+  size_t y = 0;
+  for (y = 0; y < board.height + 2; y++ ){
+    size_t x = 0;
+    for (x = 0; x < board.width + 2; x++) {
       printf(board.cells[x][y] ? "█" : "░");
     }
     puts("");
@@ -234,7 +251,8 @@ void printfullboard(board_t board) {
 }
 
 void free_board(board_t board) {
-  for (size_t y = 0; y < board.height + 2; y++) {
+  size_t y = 0;
+  for (y = 0; y < board.height + 2; y++) {
     free(board.cells[y]);
   }
 

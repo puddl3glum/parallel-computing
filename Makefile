@@ -1,9 +1,15 @@
 
-CC = gcc
-CUDACC = /opt/cuda/bin/nvcc
+cudadir = /usr/local/cuda
+
+# CC = gcc
+# CUDACC = nvcc
+# CC = $(CUDACC) -ccbin gcc -Xcompiler "-std=c99"
+CC = nvcc
+
+# cflags = --std=gnu11
 
 # lflags = -lsfml-graphics -lsfml-window -lsfml-system
-lflags = -I/opt/cuda/include -L/opt/cuda/lib -lcuda -l cudart
+# lflags = -I$(cudadir)/include -L$(cudadir)/lib64 -L$(cudadir)/lib64/stubs -lcudart -lcuda
 
 files = main game
 srcs = $(addprefix src/, $(addsuffix .c, $(files)))
@@ -22,7 +28,7 @@ all : $(cudaobjects)
 
 $(cudaobjects) : | $(objdir)
 $(cudaobjects) : $(cudasrcs)
-	$(CUDACC) -c -o $(objdir)/cuda.o $(cudasrcs)
+	$(CC) -c -o $(objdir)/cuda.o $(cudasrcs)
 
 $(objdir):
 	mkdir -p $(objdir)
