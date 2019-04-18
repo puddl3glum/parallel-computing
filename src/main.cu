@@ -88,10 +88,12 @@ int main(int argc, char* argv[]) {
   // create CUDA space
   bool* cuda_current_gen;
   bool* cuda_next_gen;
-  gpuErrchk(cudaMalloc(&cuda_current_gen, (height + 2) * (width + 2) * sizeof(bool)));
-  gpuErrchk(cudaMalloc(&cuda_next_gen, (height + 2) * (width + 2) * sizeof(bool)));
+  gpuErrchk(cudaMallocManaged(&cuda_current_gen, (height + 2) * (width + 2) * sizeof(bool)));
+  gpuErrchk(cudaMallocManaged(&cuda_next_gen, (height + 2) * (width + 2) * sizeof(bool)));
 
-  cudaMemcpy(cuda_current_gen, current_gen, (height + 2) * (width + 2) * sizeof(bool), cudaMemcpyHostToDevice);
+  memcpy(cuda_current_gen, current_gen, (height + 2) * (width + 2));
+
+  // cudaMemcpy(cuda_current_gen, current_gen, (height + 2) * (width + 2) * sizeof(bool), cudaMemcpyHostToDevice);
 
   uint64_t blocksize = 512;
   uint64_t numblocks =  ((height) * (width) + blocksize - 1) / blocksize;
@@ -110,9 +112,9 @@ int main(int argc, char* argv[]) {
     cuda_next_gen = temp;
 
 #ifdef DEBUG
-  cudaMemcpy(next_gen, cuda_next_gen, (height + 2) * (width + 2) * sizeof(bool), cudaMemcpyDeviceToHost);
+  // cudaMemcpy(next_gen, cuda_next_gen, (height + 2) * (width + 2) * sizeof(bool), cudaMemcpyDeviceToHost);
 
-  printboard(next_gen, height, width);
+  printboard(cuda_next_gen, height, width);
   puts("");
 #endif
 
