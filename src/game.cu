@@ -207,6 +207,11 @@ void advance_board(const bool* const current_gen, bool* const next_gen, const ui
   for (size_t y = yindex; y <= height; y += ystride) {
     for (size_t x = xindex; x <= width; x += xstride) {
 
+      if (y < 1 || x < 1 || y > height || x > width) {
+        // if out of bounds
+        continue;
+      }
+
       bool current_cell = current_gen[y * height + x];
 
       uint_fast8_t count = check_neighbors(current_gen, height, width, y, x);
