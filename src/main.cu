@@ -119,6 +119,14 @@ int main(int argc, char* argv[]) {
     cuda_current_gen = cuda_next_gen;
     cuda_next_gen = temp;
 
+#ifdef DEBUG
+  cudaMemcpy(next_gen, cuda_next_gen, (height + 2) * (width + 2) * sizeof(bool), cudaMemcpyDeviceToHost);
+
+  // printboard(current_gen, height, width);
+  // puts("");
+  printboard(next_gen, height, width);
+#endif
+
     // if ( checkcycles(&cyclesum, board) ) break;
 
     // compute the checksum of the board
