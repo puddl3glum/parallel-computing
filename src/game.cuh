@@ -38,3 +38,6 @@ void printboard(bool*, const size_t, const size_t);
 void printfullboard(bool*, const size_t, const size_t);
 __global__
 void advance_board(const bool* const, bool* const, const uint64_t, const uint64_t);
+
+__global__
+void white_board(bool* const, const uint64_t, const uint64_t);

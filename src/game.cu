@@ -223,6 +223,23 @@ void advance_board(const bool* const current_gen, bool* const next_gen, const ui
   }
 }
 
+__global__
+void white_board(bool* const board, const uint64_t height, const uint64_t width) {
+
+  uint64_t xindex = blockIdx.x * blockDim.x + threadIdx.x;
+  uint64_t yindex = blockIdx.y * blockDim.y + threadIdx.y;
+
+  uint64_t xstride = blockDim.x;
+  uint64_t ystride = blockDim.y;
+
+  for (size_t y = yindex; y <= height; y += ystride) {
+    for (size_t x = xindex; x <= width; x += xstride) {
+
+      board[y * height + x] = true;
+    }
+  }
+}
+
 /*
 void copy_board(board_t dest, board_t src) {
   size_t y = 0;
