@@ -122,9 +122,8 @@ int main(int argc, char* argv[]) {
 #ifdef DEBUG
   cudaMemcpy(next_gen, cuda_next_gen, (height + 2) * (width + 2) * sizeof(bool), cudaMemcpyDeviceToHost);
 
-  // printboard(current_gen, height, width);
-  // puts("");
   printboard(next_gen, height, width);
+  puts("");
 #endif
 
     // if ( checkcycles(&cyclesum, board) ) break;
