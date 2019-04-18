@@ -130,14 +130,14 @@ int main(int argc, char* argv[]) {
     // break;
   }
 
-  white_board<<<numblocks, blocksize>>>(cuda_next_gen, height, width);
+  // white_board<<<numblocks, blocksize>>>(cuda_next_gen, height, width);
 
   // cudaMemcpy(current_gen, cuda_current_gen, (height + 2) * (width + 2), cudaMemcpyDeviceToHost);
   cudaMemcpy(next_gen, cuda_next_gen, (height + 2) * (width + 2) * sizeof(bool), cudaMemcpyDeviceToHost);
 
 #ifdef DEBUG
-  printboard(current_gen, height, width);
-  puts("");
+  // printboard(current_gen, height, width);
+  // puts("");
   printboard(next_gen, height, width);
 #endif
   
