@@ -79,29 +79,19 @@ int main(int argc, char* argv[]) {
   bool* current_gen = random_board(height, width, chance, seed);
   bool* next_gen = new_board(height, width);
 
-  // memcpy(next_gen, current_gen, (height + 2) * (width + 2) * sizeof(bool));
-  // get new cyclesum tracker
-  // cyclesum_t cyclesum = newcyclesum(width, height, maxcycles);
-  
+#ifdef DEBUG
+  // print initial state
+  printboard(current_gen, height, width);
+  puts("");
+#endif
+
   // create CUDA space
   bool* cuda_current_gen;
   bool* cuda_next_gen;
   gpuErrchk(cudaMalloc(&cuda_current_gen, (height + 2) * (width + 2) * sizeof(bool)));
   gpuErrchk(cudaMalloc(&cuda_next_gen, (height + 2) * (width + 2) * sizeof(bool)));
 
-  // printf("%p\n", cuda_current_gen);
-  // printf("%p\n", cuda_next_gen);
-
-  // memcpy(cuda_current_gen, current_gen, (height + 2) * (width + 2) * sizeof(bool));
-  // puts("here");
-
   cudaMemcpy(cuda_current_gen, current_gen, (height + 2) * (width + 2) * sizeof(bool), cudaMemcpyHostToDevice);
-  // cudaMemcpy(cuda_next_gen, current_gen, (height + 2) * (width + 2) * sizeof(bool), cudaMemcpyHostToDevice);
-
-  // current_gen = new_board(height, width);
-
-  // cudaMemcpy(current_gen, cuda_current_gen, (height + 2) * (width + 2) * sizeof(bool), cudaMemcpyDeviceToHost);
-  // printboard(cuda_current_gen, height, width);
 
   uint64_t blocksize = 512;
   uint64_t numblocks =  ((height) * (width) + blocksize - 1) / blocksize;
@@ -142,12 +132,6 @@ int main(int argc, char* argv[]) {
   // cudaMemcpy(current_gen, cuda_current_gen, (height + 2) * (width + 2), cudaMemcpyDeviceToHost);
   cudaMemcpy(next_gen, cuda_next_gen, (height + 2) * (width + 2) * sizeof(bool), cudaMemcpyDeviceToHost);
 
-#ifdef DEBUG
-  // printboard(current_gen, height, width);
-  // puts("");
-  printboard(next_gen, height, width);
-#endif
-  
   // cleanup
   cudaFree(cuda_current_gen);
   cudaFree(cuda_next_gen);
