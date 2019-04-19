@@ -198,34 +198,32 @@ void advance_board(const bool* const current_gen, bool* const next_gen, const ui
   // uint64_t x = blockDim.x * blockIdx.x + threadIdx.x;
   // uint64_t y = blockDim.y * blockIdx.y + threadIdx.y;
 
-  uint64_t xindex = blockIdx.x * blockDim.x + threadIdx.x;
-  uint64_t yindex = blockIdx.y * blockDim.y + threadIdx.y;
+  uint64_t index = blockIdx.x * blockDim.x + threadIdx.x;
+  // uint64_t yindex = blockIdx.y * blockDim.y + threadIdx.y;
 
-  uint64_t xstride = blockDim.x;
-  uint64_t ystride = blockDim.y;
+  // index will be between 1 and height * width
 
-  for (size_t y = yindex; y <= height; y += ystride) {
-    for (size_t x = xindex; x <= width; x += xstride) {
+  uint64_t y = index / (height / 2); 
 
-      if (y < 1 || x < 1 || y > height || x > width) {
-        // if out of bounds
-        continue;
-      }
+  uint64_t x = index - (y * (height + 2));
 
-      bool current_cell = current_gen[y * height + x];
-
-      uint_fast8_t count = check_neighbors(current_gen, height, width, y, x);
-
-      if (current_cell && ( count > 3 || count < 2)) {
-        current_cell = false;
-      }
-      else if (! current_cell && count == 3) {
-        current_cell = true;
-      }
-
-      next_gen[y * height + x] = current_cell;
-    }
+  if (y < 1 || y > height || x < 1 || x > width) {
+    // if out of bounds
+    return;
   }
+
+  bool current_cell = current_gen[index];
+
+  uint_fast8_t count = check_neighbors(current_gen, height, width, y, x);
+
+  if (current_cell && ( count > 3 || count < 2)) {
+    current_cell = false;
+  }
+  else if (! current_cell && count == 3) {
+    current_cell = true;
+  }
+
+  next_gen[y * height + x] = current_cell;
 }
 
 __global__
