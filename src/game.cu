@@ -181,7 +181,7 @@ uint_fast8_t check_neighbors(const bool* board, const uint64_t height, const uin
         continue;
       }
 
-      if (board[(y + y_pos) * height + (x + x_pos)]) {
+      if (board[(y + y_pos) * (height + 2) + x + x_pos + 2]) {
         count++;
       }
     }
@@ -203,7 +203,7 @@ void advance_board(const bool* const current_gen, bool* const next_gen, const ui
 
   // index will be between 1 and height * width
 
-  uint64_t y = index / (height / 2); 
+  uint64_t y = index / (height + 2); 
 
   uint64_t x = index - (y * (height + 2));
 
@@ -223,7 +223,7 @@ void advance_board(const bool* const current_gen, bool* const next_gen, const ui
     current_cell = true;
   }
 
-  next_gen[y * height + x] = current_cell;
+  next_gen[y * (height + 2) + x + 2] = current_cell;
 }
 
 __global__
