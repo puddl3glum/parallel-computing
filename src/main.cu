@@ -88,12 +88,12 @@ int main(int argc, char* argv[]) {
   // create CUDA space
   bool* cuda_current_gen;
   bool* cuda_next_gen;
-  gpuErrchk(cudaMallocManaged(&cuda_current_gen, (height + 2) * (width + 2) * sizeof(bool)));
-  gpuErrchk(cudaMallocManaged(&cuda_next_gen, (height + 2) * (width + 2) * sizeof(bool)));
+  gpuErrchk(cudaMalloc(&cuda_current_gen, (height + 2) * (width + 2) * sizeof(bool)));
+  gpuErrchk(cudaMalloc(&cuda_next_gen, (height + 2) * (width + 2) * sizeof(bool)));
 
-  memcpy(cuda_current_gen, current_gen, (height + 2) * (width + 2));
+  // memcpy(cuda_current_gen, current_gen, (height + 2) * (width + 2));
 
-  // cudaMemcpy(cuda_current_gen, current_gen, (height + 2) * (width + 2) * sizeof(bool), cudaMemcpyHostToDevice);
+  cudaMemcpy(cuda_current_gen, current_gen, (height + 2) * (width + 2) * sizeof(bool), cudaMemcpyHostToDevice);
 
   uint64_t blocksize = 512;
   uint64_t numblocks =  (height * width + blocksize - 1) / blocksize;
