@@ -212,7 +212,7 @@ void advance_board(const bool* const current_gen, bool* const next_gen, const ui
     return;
   }
 
-  bool current_cell = current_gen[index];
+  bool current_cell = current_gen[y * (height + 2) + x];
 
   uint_fast8_t count = check_neighbors(current_gen, height, width, y, x);
 
