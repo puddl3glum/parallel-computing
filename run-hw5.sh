@@ -4,9 +4,9 @@ total=0
 
 runs=3
 
-width=100
-height=100
-generations=100
+width=5000
+height=5000
+generations=1000
 
 for i in `seq 1 $runs`;
 do
